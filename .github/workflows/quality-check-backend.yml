@@ -1,0 +1,31 @@
+name: Backend Node CI
+
+on:
+  push:
+    paths:
+      - "Backend/**"
+  pull_request:
+    paths:
+      - "Backend/**"
+  workflow_dispatch:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"  
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: Backend
+
+      - name: Run Backend tests
+        run: npm test
+        working-directory: Backend

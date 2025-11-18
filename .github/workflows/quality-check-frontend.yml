@@ -1,0 +1,35 @@
+name: Frontend Flutter CI
+
+on:
+  push:
+    paths:
+      - "Frontend/**"
+  pull_request:
+    paths:
+      - "Frontend/**"
+  workflow_dispatch:
+
+jobs:
+  flutter-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.16.0"  
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: Frontend
+
+      - name: Flutter analyze
+        run: flutter analyze
+        working-directory: Frontend
+
+      - name: Run Flutter tests
+        run: flutter test
+        working-directory: Frontend
