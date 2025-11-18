@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../models/highlighted_word.dart';
 import '../utils/text_highlight_parser.dart';
 
@@ -118,7 +118,7 @@ class _HighlightedTextWidgetState extends State<HighlightedTextWidget> {
                   word.type.name,
                   style: const TextStyle(fontSize: 12),
                 ),
-                backgroundColor: word.type.color.withOpacity(0.2),
+                backgroundColor: word.type.color.withValues(alpha: 0.2),
               ),
             ],
           ),
@@ -309,10 +309,9 @@ class _HighlightConfigWidgetState extends State<HighlightConfigWidget> {
               subtitle: const Text('Resaltar palabras de vocabulario'),
               value: _enableVocabulary,
               activeThumbColor: HighlightType.vocabulary.color,
+              activeTrackColor: HighlightType.vocabulary.color.withValues(alpha: 0.4),
               onChanged: (value) {
-                setState(() {
-                  _enableVocabulary = value;
-                });
+                setState(() => _enableVocabulary = value);
                 widget.onConfigChanged(_enableVocabulary, _enableGrammar);
               },
             ),
@@ -321,10 +320,9 @@ class _HighlightConfigWidgetState extends State<HighlightConfigWidget> {
               subtitle: const Text('Resaltar patrones gramaticales'),
               value: _enableGrammar,
               activeThumbColor: HighlightType.grammar.color,
+              activeTrackColor: HighlightType.grammar.color.withValues(alpha: 0.4),
               onChanged: (value) {
-                setState(() {
-                  _enableGrammar = value;
-                });
+                setState(() => _enableGrammar = value);
                 widget.onConfigChanged(_enableVocabulary, _enableGrammar);
               },
             ),

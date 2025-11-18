@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../models/chapter_evaluation.dart';
@@ -14,14 +14,14 @@ class EvaluationDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surfaceContainer,
       appBar: AppBar(
-        title: Text('${l10n.chapter} ${evaluation.chapterNumber}'),
+        title: Text('${l10n?.chapter ?? "Chapter"} ${evaluation.chapterNumber}'),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         elevation: 0,
@@ -54,7 +54,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${l10n.chapter} ${evaluation.chapterNumber}',
+                                '${l10n?.chapter ?? "Chapter"} ${evaluation.chapterNumber}',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: theme.colorScheme.primary,
                                 ),
@@ -68,10 +68,10 @@ class EvaluationDetailsScreen extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: evaluation.statusColor.withOpacity(0.1),
+                            color: evaluation.statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: evaluation.statusColor.withOpacity(0.3),
+                              color: evaluation.statusColor.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Text(
@@ -95,7 +95,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: evaluation.statusColor.withOpacity(0.1),
+                              color: evaluation.statusColor.withValues(alpha: 0.1),
                               border: Border.all(
                                 color: evaluation.statusColor,
                                 width: 4,
@@ -149,7 +149,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.evaluationInfo,
+                      l10n?.evaluationInfo ?? "Evaluation Information",
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -157,21 +157,21 @@ class EvaluationDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     _InfoRow(
                       icon: Icons.calendar_today,
-                      label: l10n.completedDate,
+                      label: l10n?.completedDate ?? "Completed Date",
                       value: dateFormat.format(evaluation.completedAt),
                       theme: theme,
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
                       icon: Icons.refresh,
-                      label: l10n.attempts,
+                      label: l10n?.attempts ?? "Attempts",
                       value: evaluation.attempts.toString(),
                       theme: theme,
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
                       icon: Icons.timer,
-                      label: l10n.timeSpent,
+                      label: l10n?.timeSpent ?? "Time Spent",
                       value: _formatDuration(evaluation.timeSpent),
                       theme: theme,
                     ),
@@ -191,7 +191,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.skillBreakdown,
+                        l10n?.skillBreakdown ?? "Skill Breakdown",
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -220,7 +220,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.feedback,
+                        l10n?.feedback ?? "Feedback",
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -231,7 +231,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color:
-                              theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                              theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -254,11 +254,11 @@ class EvaluationDetailsScreen extends StatelessWidget {
                 onPressed: () {
                   // TODO: Implementar navegación a repetir capítulo
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.featureComingSoon)),
+                    SnackBar(content: Text(l10n?.featureComingSoon ?? "Feature coming soon")),
                   );
                 },
                 icon: const Icon(Icons.refresh),
-                label: Text(l10n.repeatChapter),
+                label: Text(l10n?.repeatChapter ?? "Repeat Chapter"),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -329,9 +329,9 @@ class _SkillCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,3 +392,4 @@ class _SkillCard extends StatelessWidget {
     return const Color(0xFFF44336); // Red
   }
 }
+

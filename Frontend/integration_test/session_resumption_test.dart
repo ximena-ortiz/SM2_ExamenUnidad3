@@ -43,7 +43,7 @@ void main() {
       if (authProvider.authState != AuthState.authenticated) {
         // No backend? Skip test gracefully.
         // ignore: avoid_print
-        print('⚠️ QA-001: Skipping test - Login failed (no backend connection)');
+        debugPrint('⚠️ QA-001: Skipping test - Login failed (no backend connection)');
         return;
       }
 
@@ -82,7 +82,7 @@ void main() {
       }
 
       // ignore: avoid_print
-      print('✅ QA-001: Session resumption test completed');
+      debugPrint('✅ QA-001: Session resumption test completed');
     });
 
     testWidgets('QA-002: Automatic autosave every few seconds', (WidgetTester tester) async {
@@ -97,7 +97,7 @@ void main() {
 
       if (authProvider.authState != AuthState.authenticated) {
         // ignore: avoid_print
-        print('⚠️ QA-002: Skipping test - Login failed (no backend connection)');
+        debugPrint('⚠️ QA-002: Skipping test - Login failed (no backend connection)');
         return;
       }
 
@@ -122,7 +122,7 @@ void main() {
       }
 
       // ignore: avoid_print
-      print('✅ QA-002: Automatic autosave test completed');
+      debugPrint('✅ QA-002: Automatic autosave test completed');
     });
 
     testWidgets('QA-003: Offline recovery and synchronization', (WidgetTester tester) async {
@@ -137,7 +137,7 @@ void main() {
 
       if (authProvider.authState != AuthState.authenticated) {
         // ignore: avoid_print
-        print('⚠️ QA-003: Skipping test - Login failed (no backend connection)');
+        debugPrint('⚠️ QA-003: Skipping test - Login failed (no backend connection)');
         return;
       }
 
@@ -161,7 +161,7 @@ void main() {
         );
       } catch (e) {
         // ignore: avoid_print
-        print('⚠️ QA-003: hasPendingProgress property not available, checking progress state instead');
+        debugPrint('⚠️ QA-003: hasPendingProgress property not available, checking progress state instead');
         expect(
           progressProvider.progressState,
           anyOf([ProgressState.saving, ProgressState.saved]),
@@ -182,7 +182,7 @@ void main() {
         );
       } catch (e) {
         // ignore: avoid_print
-        print('⚠️ QA-003: hasPendingProgress property not available for verification');
+        debugPrint('⚠️ QA-003: hasPendingProgress property not available for verification');
       }
 
       expect(
@@ -192,7 +192,7 @@ void main() {
       );
 
       // ignore: avoid_print
-      print('✅ QA-003: Offline recovery test completed');
+      debugPrint('✅ QA-003: Offline recovery test completed');
     });
 
     testWidgets('QA-004: Data persistence in SharedPreferences', (WidgetTester tester) async {
@@ -209,7 +209,7 @@ void main() {
       // Skip the test if login failed (no real backend connection)
       if (authProvider.authState != AuthState.authenticated) {
         // ignore: avoid_print
-        print('⚠️ QA-004: Skipping test - Login failed (no backend connection)');
+        debugPrint('⚠️ QA-004: Skipping test - Login failed (no backend connection)');
         return;
       }
 
@@ -250,30 +250,30 @@ Future<void> _performLogin(WidgetTester tester, [String? email, String? password
   // Check auth state
   final authProvider = Provider.of<AuthProvider>(tester.element(find.byType(MaterialApp)), listen: false);
   // ignore: avoid_print
-  print('Auth state before login: ${authProvider.authState}');
+  debugPrint('Auth state before login: ${authProvider.authState}');
 
   // Wait for login screen to be visible
   await tester.pumpAndSettle();
 
   // ignore: avoid_print
-  print('Attempting login with: $usedEmail');
+  debugPrint('Attempting login with: $usedEmail');
 
   // Check if email field exists
   final emailField = find.byKey(const Key('email_field'));
   // ignore: avoid_print
-  print('Email field found: ${emailField.evaluate().isNotEmpty}');
+  debugPrint('Email field found: ${emailField.evaluate().isNotEmpty}');
   expect(emailField, findsOneWidget, reason: 'Email field should be present');
 
   // Check if password field exists
   final passwordField = find.byKey(const Key('password_field'));
   // ignore: avoid_print
-  print('Password field found: ${passwordField.evaluate().isNotEmpty}');
+  debugPrint('Password field found: ${passwordField.evaluate().isNotEmpty}');
   expect(passwordField, findsOneWidget, reason: 'Password field should be present');
 
   // Check if login button exists
   final loginButton = find.byKey(const Key('login_button'));
   // ignore: avoid_print
-  print('Login button found: ${loginButton.evaluate().isNotEmpty}');
+  debugPrint('Login button found: ${loginButton.evaluate().isNotEmpty}');
   expect(loginButton, findsOneWidget, reason: 'Login button should be present');
 
   // Fill email field
@@ -291,11 +291,11 @@ Future<void> _performLogin(WidgetTester tester, [String? email, String? password
   // Check login result
   final newAuthState = authProvider.authState;
   // ignore: avoid_print
-  print('Auth state after login: $newAuthState');
+  debugPrint('Auth state after login: $newAuthState');
 
   if (newAuthState != AuthState.authenticated) {
     // ignore: avoid_print
-    print('Login failed: ${authProvider.errorMessage}');
+    debugPrint('Login failed: ${authProvider.errorMessage}');
   }
 }
 

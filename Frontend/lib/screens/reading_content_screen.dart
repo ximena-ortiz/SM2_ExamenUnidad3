@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 import '../providers/reading_content_provider.dart';
@@ -61,12 +60,22 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
     final l10n = AppLocalizations.of(context)!;
     final contentProvider = Provider.of<ReadingContentProvider>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false, // Evita que el sistema haga pop automáticamente
+      onPopInvokedWithResult: (didPop, dynamic result) async {
+        if (didPop) return; // Ya hizo pop, no hacer nada
+
+        // Reemplazo de tu onWillPop
         if (contentProvider.isQuizMode) {
-          return await _showExitQuizDialog(context);
+          final shouldPop = await _showExitQuizDialog(context);
+          if (shouldPop && context.mounted) {
+            Navigator.of(context).pop();
+          }
+        } else {
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
         }
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -108,12 +117,9 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
             }
 
             if (provider.content == null) {
-              return const Center(
-                child: Text('No content available'),
-              );
+              return const Center(child: Text('No content available'));
             }
 
-            // Show loading indicator while quiz is being loaded
             if (provider.isLoadingQuiz) {
               return Center(
                 child: Column(
@@ -121,21 +127,15 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
-                    Text(
-                      l10n.loading,
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                    Text(l10n.loading, style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               );
             }
 
-            // Show quiz mode or reading mode
-            if (provider.isQuizMode) {
-              return _buildQuizView(provider);
-            } else {
-              return _buildReadingView(provider);
-            }
+            return provider.isQuizMode
+                ? _buildQuizView(provider)
+                : _buildReadingView(provider);
           },
         ),
       ),
@@ -154,8 +154,8 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                theme.colorScheme.primary.withOpacity(0.1),
-                theme.colorScheme.primary.withOpacity(0.05),
+                theme.colorScheme.primary.withValues(alpha: 0.1),
+                theme.colorScheme.primary.withValues(alpha: 0.05),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -173,7 +173,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -238,13 +238,13 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                       end: Alignment.bottomRight,
                       colors: [
                         theme.colorScheme.surface,
-                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 15,
                         offset: const Offset(0, 4),
                       ),
@@ -259,7 +259,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -289,8 +289,8 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              theme.colorScheme.primary.withOpacity(0.5),
-                              theme.colorScheme.primary.withOpacity(0.1),
+                              theme.colorScheme.primary.withValues(alpha: 0.5),
+                              theme.colorScheme.primary.withValues(alpha: 0.1),
                               Colors.transparent,
                             ],
                           ),
@@ -305,7 +305,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                           fontSize: 18,
                           height: 1.8,
                           letterSpacing: 0.3,
-                          color: theme.colorScheme.onSurface.withOpacity(0.9),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -323,7 +323,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
@@ -384,14 +384,14 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
             gradient: LinearGradient(
               colors: [
                 theme.colorScheme.primary,
-                theme.colorScheme.primary.withOpacity(0.8),
+                theme.colorScheme.primary.withValues(alpha: 0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -406,7 +406,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -443,7 +443,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
                   value: (provider.currentQuestionIndex + 1) / provider.totalQuestions,
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundColor: Colors.white.withValues(alpha: 0.3),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 8,
                 ),
@@ -469,13 +469,13 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                       end: Alignment.bottomRight,
                       colors: [
                         theme.colorScheme.surface,
-                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 15,
                         offset: const Offset(0, 4),
                       ),
@@ -491,7 +491,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -537,8 +537,8 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                           gradient: isSelected
                               ? LinearGradient(
                                   colors: [
-                                    theme.colorScheme.primary.withOpacity(0.2),
-                                    theme.colorScheme.primary.withOpacity(0.1),
+                                    theme.colorScheme.primary.withValues(alpha: 0.2),
+                                    theme.colorScheme.primary.withValues(alpha: 0.1),
                                   ],
                                 )
                               : null,
@@ -553,14 +553,14 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: theme.colorScheme.primary.withOpacity(0.3),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
                                 ]
                               : [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Colors.black.withValues(alpha: 0.05),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -639,7 +639,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.amber.withOpacity(0.3),
+                                  color: Colors.amber.withValues(alpha: 0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -748,13 +748,13 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
       }
     } else if (result == 'wrong_first_attempt') {
       // First wrong attempt - vibrate and show hint
-      if (await Vibration.hasVibrator() ?? false) {
+      if (await Vibration.hasVibrator()) {
         Vibration.vibrate(duration: 500);
       }
       // Hint is automatically shown by provider
     } else if (result == 'wrong_second_attempt') {
       // Second wrong attempt - vibrate stronger, lose life, show animation
-      if (await Vibration.hasVibrator() ?? false) {
+      if (await Vibration.hasVibrator()) {
         Vibration.vibrate(pattern: [0, 200, 100, 200]);
       }
 
@@ -762,7 +762,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
       await _showLifeLostAnimation();
 
       // Consume a life
-      final lifeConsumed = await livesProvider.consumeLife();
+      await livesProvider.consumeLife();
 
       // Check if out of lives
       if (livesProvider.currentLives <= 0) {
@@ -771,10 +771,21 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
         return;
       }
 
-      // Move to next question
+      // Move to next question (only if not the last one)
       await Future.delayed(const Duration(milliseconds: 800));
       if (provider.isLastQuestion) {
-        await _submitQuiz(provider);
+        // Last question answered incorrectly - don't complete, just reset
+        // User can retry the quiz later
+        provider.resetQuiz();
+        if (mounted) {
+          Navigator.of(context).pop(); // Return to chapters screen
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Quiz not completed. Try again!'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
       } else {
         provider.nextQuestion();
       }
@@ -786,7 +797,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) => const LifeLostAnimationDialog(),
     );
 
@@ -794,12 +805,11 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
     if (mounted) Navigator.of(context).pop();
   }
 
-  /// Handle no lives remaining - save progress and go back
+  /// Handle no lives remaining - go back without completing
   Future<void> _handleNoLivesRemaining(ReadingContentProvider provider) async {
-    final l10n = AppLocalizations.of(context)!;
 
-    // Save progress
-    await provider.submitQuiz();
+    // DO NOT submit quiz - user didn't complete it
+    // Just exit and let them retry later with new lives
 
     if (!mounted) return;
 
@@ -892,9 +902,10 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
     }
 
     final score = result['score'] as int;
-    final passed = result['passed'] as bool;
+    final chapterCompleted = result['chapterCompleted'] as bool? ?? false;
 
-    if (passed) {
+    if (chapterCompleted) {
+      if (!mounted) return;
       // Mark chapter as completed
       final chaptersProvider = Provider.of<ReadingChaptersProvider>(context, listen: false);
       await chaptersProvider.completeChapter(widget.chapter.id, score);
@@ -904,6 +915,7 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
         _showSuccessDialog(score);
       }
     } else {
+      if (!mounted) return;
       // Consume a life and show retry dialog
       final livesProvider = Provider.of<LivesProvider>(context, listen: false);
       await livesProvider.consumeLife();
@@ -1041,10 +1053,6 @@ class _ReadingContentScreenState extends State<ReadingContentScreen> {
   }
 }
 
-extension _ExpandedWidget on Widget {
-  Widget get expand => Expanded(child: this);
-}
-
 /// Life Lost Animation Dialog Widget
 class LifeLostAnimationDialog extends StatefulWidget {
   const LifeLostAnimationDialog({super.key});
@@ -1107,7 +1115,7 @@ class _LifeLostAnimationDialogState extends State<LifeLostAnimationDialog>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.red.withOpacity(0.5),
+                      color: Colors.red.withValues(alpha: 0.5),
                       blurRadius: 40,
                       spreadRadius: 10,
                     ),
@@ -1124,7 +1132,7 @@ class _LifeLostAnimationDialogState extends State<LifeLostAnimationDialog>
                           angle: value * 0.2,
                           child: Icon(
                             Icons.favorite_border,
-                            color: Colors.red.withOpacity(1 - value),
+                            color: Colors.red.withValues(alpha: 1 - value),
                             size: 80,
                           ),
                         );
@@ -1149,3 +1157,4 @@ class _LifeLostAnimationDialogState extends State<LifeLostAnimationDialog>
     );
   }
 }
+

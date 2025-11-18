@@ -15,7 +15,7 @@ class InterviewPracticeSession {
   final DateTime? endedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   // Interview-specific fields
   final String interviewType;
   final String difficultyLevel;
@@ -26,7 +26,7 @@ class InterviewPracticeSession {
   final ConversationFlow conversationFlow;
   final AIEvaluation? aiEvaluation;
   final int speakingTimeSeconds;
-  
+
   InterviewPracticeSession({
     required this.id,
     required this.userId,
@@ -50,7 +50,7 @@ class InterviewPracticeSession {
     this.aiEvaluation,
     required this.speakingTimeSeconds,
   });
-  
+
   factory InterviewPracticeSession.fromJson(Map<String, dynamic> json) {
     return InterviewPracticeSession(
       id: json['id'] ?? '',
@@ -61,23 +61,35 @@ class InterviewPracticeSession {
       score: (json['score'] ?? 0).toDouble(),
       maxScore: (json['maxScore'] ?? 0).toDouble(),
       status: json['status'] ?? 'started',
-      startedAt: DateTime.parse(json['startedAt'] ?? DateTime.now().toIso8601String()),
+      startedAt: DateTime.parse(
+        json['startedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       endedAt: json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       interviewType: json['interviewType'] ?? 'general',
       difficultyLevel: json['difficultyLevel'] ?? 'beginner',
       totalQuestions: json['totalQuestions'] ?? 0,
       answeredQuestions: json['answeredQuestions'] ?? 0,
-      questions: (json['questions'] as List<dynamic>?)
-          ?.map((question) => InterviewQuestion.fromJson(question))
-          .toList() ?? [],
-      answers: (json['answers'] as List<dynamic>?)
-          ?.map((answer) => InterviewAnswer.fromJson(answer))
-          .toList() ?? [],
-      conversationFlow: ConversationFlow.fromJson(json['conversationFlow'] ?? {}),
-      aiEvaluation: json['aiEvaluation'] != null 
-          ? AIEvaluation.fromJson(json['aiEvaluation']) 
+      questions:
+          (json['questions'] as List<dynamic>?)
+              ?.map((question) => InterviewQuestion.fromJson(question))
+              .toList() ??
+          [],
+      answers:
+          (json['answers'] as List<dynamic>?)
+              ?.map((answer) => InterviewAnswer.fromJson(answer))
+              .toList() ??
+          [],
+      conversationFlow: ConversationFlow.fromJson(
+        json['conversationFlow'] ?? {},
+      ),
+      aiEvaluation: json['aiEvaluation'] != null
+          ? AIEvaluation.fromJson(json['aiEvaluation'])
           : null,
       speakingTimeSeconds: json['speakingTimeSeconds'] ?? 0,
     );
@@ -92,7 +104,7 @@ class InterviewQuestion {
   final List<String> expectedKeywords;
   final int timeLimit;
   final String? followUpQuestion;
-  
+
   InterviewQuestion({
     required this.id,
     required this.question,
@@ -102,7 +114,7 @@ class InterviewQuestion {
     required this.timeLimit,
     this.followUpQuestion,
   });
-  
+
   factory InterviewQuestion.fromJson(Map<String, dynamic> json) {
     return InterviewQuestion(
       id: json['id'] ?? '',
@@ -124,7 +136,7 @@ class InterviewAnswer {
   final double confidenceScore;
   final List<String> detectedKeywords;
   final String audioUrl;
-  
+
   InterviewAnswer({
     required this.questionId,
     required this.answer,
@@ -134,19 +146,21 @@ class InterviewAnswer {
     required this.detectedKeywords,
     required this.audioUrl,
   });
-  
+
   factory InterviewAnswer.fromJson(Map<String, dynamic> json) {
     return InterviewAnswer(
       questionId: json['questionId'] ?? '',
       answer: json['answer'] ?? '',
       speakingTimeSeconds: json['speakingTimeSeconds'] ?? 0,
-      answeredAt: DateTime.parse(json['answeredAt'] ?? DateTime.now().toIso8601String()),
+      answeredAt: DateTime.parse(
+        json['answeredAt'] ?? DateTime.now().toIso8601String(),
+      ),
       confidenceScore: (json['confidenceScore'] ?? 0).toDouble(),
       detectedKeywords: List<String>.from(json['detectedKeywords'] ?? []),
       audioUrl: json['audioUrl'] ?? '',
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'questionId': questionId,
@@ -165,14 +179,14 @@ class ConversationFlow {
   final List<String> completedQuestions;
   final String flowState;
   final Map<String, dynamic> context;
-  
+
   ConversationFlow({
     required this.currentQuestionIndex,
     required this.completedQuestions,
     required this.flowState,
     required this.context,
   });
-  
+
   factory ConversationFlow.fromJson(Map<String, dynamic> json) {
     return ConversationFlow(
       currentQuestionIndex: json['currentQuestionIndex'] ?? 0,
@@ -181,7 +195,7 @@ class ConversationFlow {
       context: Map<String, dynamic>.from(json['context'] ?? {}),
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'currentQuestionIndex': currentQuestionIndex,
@@ -202,7 +216,7 @@ class AIEvaluation {
   final List<String> strengths;
   final List<String> improvements;
   final DateTime evaluatedAt;
-  
+
   AIEvaluation({
     required this.overallScore,
     required this.fluencyScore,
@@ -214,7 +228,7 @@ class AIEvaluation {
     required this.improvements,
     required this.evaluatedAt,
   });
-  
+
   factory AIEvaluation.fromJson(Map<String, dynamic> json) {
     return AIEvaluation(
       overallScore: (json['overallScore'] ?? 0).toDouble(),
@@ -225,7 +239,9 @@ class AIEvaluation {
       feedback: json['feedback'] ?? '',
       strengths: List<String>.from(json['strengths'] ?? []),
       improvements: List<String>.from(json['improvements'] ?? []),
-      evaluatedAt: DateTime.parse(json['evaluatedAt'] ?? DateTime.now().toIso8601String()),
+      evaluatedAt: DateTime.parse(
+        json['evaluatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 }
@@ -242,7 +258,7 @@ class InterviewStats {
   final DateTime? lastSessionDate;
   final String favoriteInterviewType;
   final int totalQuestionsAnswered;
-  
+
   InterviewStats({
     required this.totalSessions,
     required this.completedSessions,
@@ -256,7 +272,7 @@ class InterviewStats {
     required this.favoriteInterviewType,
     required this.totalQuestionsAnswered,
   });
-  
+
   factory InterviewStats.fromJson(Map<String, dynamic> json) {
     return InterviewStats(
       totalSessions: json['totalSessions'] ?? 0,
@@ -265,10 +281,11 @@ class InterviewStats {
       averageFluencyScore: (json['averageFluencyScore'] ?? 0).toDouble(),
       averageGrammarScore: (json['averageGrammarScore'] ?? 0).toDouble(),
       averageVocabularyScore: (json['averageVocabularyScore'] ?? 0).toDouble(),
-      averagePronunciationScore: (json['averagePronunciationScore'] ?? 0).toDouble(),
+      averagePronunciationScore: (json['averagePronunciationScore'] ?? 0)
+          .toDouble(),
       totalSpeakingTimeMinutes: json['totalSpeakingTimeMinutes'] ?? 0,
-      lastSessionDate: json['lastSessionDate'] != null 
-          ? DateTime.parse(json['lastSessionDate']) 
+      lastSessionDate: json['lastSessionDate'] != null
+          ? DateTime.parse(json['lastSessionDate'])
           : null,
       favoriteInterviewType: json['favoriteInterviewType'] ?? 'general',
       totalQuestionsAnswered: json['totalQuestionsAnswered'] ?? 0,
@@ -279,7 +296,7 @@ class InterviewStats {
 class InterviewPracticeService extends BasePracticeService {
   @override
   String get baseEndpoint => 'practices/interview';
-  
+
   // Create a new interview practice session
   Future<InterviewPracticeSession?> createInterviewSession({
     required String token,
@@ -299,11 +316,11 @@ class InterviewPracticeService extends BasePracticeService {
       'difficultyLevel': difficultyLevel,
       'totalQuestions': totalQuestions,
     };
-    
+
     final response = await createPracticeSession(practiceData, token);
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Get interview practice session
   Future<InterviewPracticeSession?> getInterviewSession(
     String sessionId,
@@ -312,7 +329,7 @@ class InterviewPracticeService extends BasePracticeService {
     final response = await getPracticeSession(sessionId, token);
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Answer interview question
   Future<InterviewPracticeSession?> answerQuestion({
     required String sessionId,
@@ -324,8 +341,9 @@ class InterviewPracticeService extends BasePracticeService {
     double? confidenceScore,
     List<String>? detectedKeywords,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/answer-question';
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/answer-question';
+
     final answerData = {
       'questionId': questionId,
       'answer': answer,
@@ -334,71 +352,70 @@ class InterviewPracticeService extends BasePracticeService {
       if (confidenceScore != null) 'confidenceScore': confidenceScore,
       if (detectedKeywords != null) 'detectedKeywords': detectedKeywords,
     };
-    
+
     final response = await apiService.post(
       endpoint,
       body: answerData,
       token: token,
     );
-    
+
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Update conversation flow
   Future<InterviewPracticeSession?> updateConversationFlow({
     required String sessionId,
     required String token,
     required ConversationFlow conversationFlow,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/conversation-flow';
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/conversation-flow';
+
     final response = await apiService.put(
       endpoint,
       body: conversationFlow.toJson(),
       token: token,
     );
-    
+
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Request AI evaluation
   Future<InterviewPracticeSession?> requestAIEvaluation({
     required String sessionId,
     required String token,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/ai-evaluation';
-    
-    final response = await apiService.post(
-      endpoint,
-      body: {},
-      token: token,
-    );
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/ai-evaluation';
+
+    final response = await apiService.post(endpoint, body: {}, token: token);
+
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Complete interview session
   Future<InterviewPracticeSession?> completeInterview({
     required String sessionId,
     required String token,
     required int totalSpeakingTime,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/complete';
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/complete';
+
     final completionData = {
       'totalSpeakingTime': totalSpeakingTime,
       'status': 'completed',
     };
-    
+
     final response = await apiService.post(
       endpoint,
       body: completionData,
       token: token,
     );
-    
+
     return parseResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Get user interview sessions
   Future<List<InterviewPracticeSession>> getUserInterviewSessions({
     required String userId,
@@ -415,7 +432,7 @@ class InterviewPracticeService extends BasePracticeService {
     if (difficultyLevel != null) filters['difficultyLevel'] = difficultyLevel;
     if (completed != null) filters['completed'] = completed;
     if (minScore != null) filters['minScore'] = minScore;
-    
+
     final response = await getUserPracticeSessions(
       userId,
       token,
@@ -423,10 +440,10 @@ class InterviewPracticeService extends BasePracticeService {
       limit: limit,
       offset: offset,
     );
-    
+
     return parseListResponse(response, InterviewPracticeSession.fromJson);
   }
-  
+
   // Get user interview statistics
   Future<InterviewStats?> getUserInterviewStats({
     required String userId,
@@ -436,16 +453,20 @@ class InterviewPracticeService extends BasePracticeService {
     String? difficultyLevel,
   }) async {
     final additionalFilters = <String, dynamic>{};
-    if (interviewType != null) additionalFilters['interviewType'] = interviewType;
-    if (difficultyLevel != null) additionalFilters['difficultyLevel'] = difficultyLevel;
-    
+    if (interviewType != null) {
+      additionalFilters['interviewType'] = interviewType;
+    }
+    if (difficultyLevel != null) {
+      additionalFilters['difficultyLevel'] = difficultyLevel;
+    }
+
     final response = await getUserPracticeStats(
       userId,
       token,
       timeframe: timeframe,
       additionalFilters: additionalFilters,
     );
-    
+
     return parseResponse(response, InterviewStats.fromJson);
   }
 }

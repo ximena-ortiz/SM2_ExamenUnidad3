@@ -133,7 +133,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
           _isOnline = true;
           
           if (kDebugMode) {
-            print('📚 Vocabulary chapters loaded: ${_chaptersData!.totalChapters} total, ${_chaptersData!.unlockedChapters} unlocked');
+            debugPrint('📚 Vocabulary chapters loaded: ${_chaptersData!.totalChapters} total, ${_chaptersData!.unlockedChapters} unlocked');
           }
           
           return true;
@@ -147,7 +147,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Error loading vocabulary chapters: $e');
+        debugPrint('❌ Error loading vocabulary chapters: $e');
       }
       
       // Handle offline scenario
@@ -212,9 +212,9 @@ class VocabularyChaptersProvider with ChangeNotifier {
           _setState(VocabularyChaptersState.completed);
           
           if (kDebugMode) {
-            print('✅ Chapter completed successfully: ${chapter.title}');
+            debugPrint('✅ Chapter completed successfully: ${chapter.title}');
             if (completeResponse.data.nextChapterUnlocked) {
-              print('🔓 Next chapter unlocked!');
+              debugPrint('🔓 Next chapter unlocked!');
             }
           }
           
@@ -229,7 +229,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Error completing chapter: $e');
+        debugPrint('❌ Error completing chapter: $e');
       }
       
       // Queue for offline processing
@@ -281,7 +281,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
       await prefs.setString(_chaptersKey, jsonEncode(data));
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to cache vocabulary chapters data: $e');
+        debugPrint('Failed to cache vocabulary chapters data: $e');
       }
     }
   }
@@ -302,13 +302,13 @@ class VocabularyChaptersProvider with ChangeNotifier {
           _setState(VocabularyChaptersState.loaded);
           
           if (kDebugMode) {
-            print('📚 Loaded cached vocabulary chapters data');
+            debugPrint('📚 Loaded cached vocabulary chapters data');
           }
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to load cached vocabulary chapters data: $e');
+        debugPrint('Failed to load cached vocabulary chapters data: $e');
       }
     }
   }
@@ -327,7 +327,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
       await prefs.setString(_pendingActionsKey, jsonEncode(_pendingActions));
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to save pending actions: $e');
+        debugPrint('Failed to save pending actions: $e');
       }
     }
   }
@@ -363,7 +363,7 @@ class VocabularyChaptersProvider with ChangeNotifier {
       await prefs.setString(_pendingActionsKey, jsonEncode(_pendingActions));
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to update pending actions: $e');
+        debugPrint('Failed to update pending actions: $e');
       }
     }
   }

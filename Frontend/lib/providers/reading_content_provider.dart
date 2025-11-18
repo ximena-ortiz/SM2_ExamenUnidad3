@@ -55,12 +55,21 @@ class ReadingContentProvider with ChangeNotifier {
   bool get showHint => _showHint;
   bool get hasAttemptedOnce => _hasAttemptedOnce;
   int get wrongAnswersCount => _wrongAnswersCount;
+  
+  // Track which answer is currently selected
+  int? _selectedAnswerIndex;
+  int? get selectedAnswerIndex => _selectedAnswerIndex;
+  
+  // Track if we should show the correct answer
+  bool _showCorrectAnswer = false;
+  bool get showCorrectAnswer => _showCorrectAnswer;
 
   bool get isLoading => _state == ReadingContentState.loading;
   bool get hasError => _state == ReadingContentState.error;
   bool get isLoaded => _state == ReadingContentState.loaded;
   bool get isLastPage => _currentPage == totalPages - 1;
   bool get isLastQuestion => _currentQuestionIndex == totalQuestions - 1;
+  bool get isQuizCompleted => _userAnswers.isNotEmpty && !_userAnswers.contains(null);
 
   String get currentPageContent {
     if (_content == null || _currentPage >= _content!.content.length) {
@@ -117,8 +126,15 @@ class ReadingContentProvider with ChangeNotifier {
         _state = ReadingContentState.loaded;
         _errorMessage = null;
       } else if (response.statusCode == 401) {
-        _state = ReadingContentState.error;
-        _errorMessage = 'Session expired. Please login again.';
+        // Intentar renovar el token
+        final refreshSuccess = await _authProvider.refreshToken();
+        if (refreshSuccess) {
+          // Reintentar la solicitud con el nuevo token
+          return await fetchContent(chapterId);
+        } else {
+          _state = ReadingContentState.error;
+          _errorMessage = 'Session expired. Please login again.';
+        }
       } else {
         _state = ReadingContentState.error;
         _errorMessage = 'Failed to load content: ${response.statusCode}';
@@ -131,43 +147,97 @@ class ReadingContentProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Fetch quiz questions for current content
-  Future<void> fetchQuizQuestions() async {
+  /// Fetch quiz questions for current chapter with improved error handling
+  Future<bool> fetchQuizQuestions() async {
     if (_content == null || !_authProvider.isAuthenticated || _authProvider.token == null) {
       _errorMessage = 'Content not loaded or user not authenticated';
       notifyListeners();
-      return;
+      return false;
     }
 
     _isLoadingQuiz = true;
     notifyListeners();
 
     try {
-      final response = await http.get(
-        Uri.parse('${EnvironmentConfig.fullApiUrl}/reading/chapters/${_content!.readingChapterId}/quiz'),
-        headers: {
-          'Authorization': 'Bearer ${_authProvider.token}',
-          'Origin': EnvironmentConfig.apiBaseUrl,
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      );
+      // Add retry logic for network resilience
+      int retryCount = 0;
+      const maxRetries = 2;
+      bool success = false;
+      
+      while (retryCount <= maxRetries && !success) {
+        try {
+          final response = await http.get(
+            Uri.parse('${EnvironmentConfig.fullApiUrl}/reading/chapters/${_content!.readingChapterId}/quiz'),
+            headers: {
+              'Authorization': 'Bearer ${_authProvider.token}',
+              'Origin': EnvironmentConfig.apiBaseUrl,
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+          ).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final questionsResponse = ReadingQuizQuestionsResponse.fromJson(jsonData);
+          if (response.statusCode == 200) {
+            final jsonData = json.decode(response.body);
+            final questionsResponse = ReadingQuizQuestionsResponse.fromJson(jsonData);
 
-        _quizQuestions = questionsResponse.questions;
-        _userAnswers = List.filled(_quizQuestions.length, null);
-        _currentQuestionIndex = 0;
-        _score = 0;
-        _isQuizMode = true;
+            // Validate that we have questions
+            if (questionsResponse.questions.isEmpty) {
+              _errorMessage = 'No quiz questions available for this chapter';
+              success = false;
+              break;
+            }
 
-        _errorMessage = null;
-      } else {
-        _errorMessage = 'Failed to load quiz questions: ${response.statusCode}';
+            _quizQuestions = questionsResponse.questions;
+            _userAnswers = List.filled(_quizQuestions.length, null);
+            _questionAnsweredCorrectly = List.filled(_quizQuestions.length, false);
+            _currentQuestionIndex = 0;
+            _score = 0;
+            _isQuizMode = true;
+            _showHint = false;
+            _hasAttemptedOnce = false;
+            _selectedAnswerIndex = null;
+            _showCorrectAnswer = false;
+
+            _errorMessage = null;
+            success = true;
+            // Log integration test success
+            debugPrint('INTEGRATION TEST: fetchQuiz - SUCCESS');
+            break;
+          } else if (response.statusCode == 401) {
+            // Token expired, try to refresh using the new method
+            try {
+              final refreshSuccess = await _authProvider.refreshToken();
+              if (!refreshSuccess) {
+                _errorMessage = 'Error al renovar el token de acceso';
+                success = false;
+                break;
+              }
+            } catch (e) {
+              debugPrint('Error al renovar token: $e');
+              _errorMessage = 'Error al renovar el token de acceso';
+              success = false;
+              break;
+            }
+            retryCount++;
+          } else {
+            _errorMessage = 'Failed to load quiz questions: ${response.statusCode}';
+            success = false;
+            break;
+          }
+        } catch (e) {
+          retryCount++;
+          if (retryCount > maxRetries) {
+            _errorMessage = 'Network error after multiple attempts: $e';
+            success = false;
+          }
+          // Wait before retry
+          await Future.delayed(Duration(milliseconds: 500 * retryCount));
+        }
       }
+      
+      return success;
     } catch (e) {
-      _errorMessage = 'Network error: $e';
+      _errorMessage = 'Unexpected error: $e';
+      return false;
     } finally {
       _isLoadingQuiz = false;
       notifyListeners();
@@ -254,6 +324,20 @@ class ReadingContentProvider with ChangeNotifier {
       _currentQuestionIndex++;
       _showHint = false;
       _hasAttemptedOnce = false;
+      _selectedAnswerIndex = null;
+      _showCorrectAnswer = false;
+      notifyListeners();
+    }
+  }
+  
+  /// Move to previous question
+  void previousQuestion() {
+    if (_currentQuestionIndex > 0) {
+      _currentQuestionIndex--;
+      _showHint = false;
+      _hasAttemptedOnce = false;
+      _selectedAnswerIndex = null;
+      _showCorrectAnswer = false;
       notifyListeners();
     }
   }
@@ -266,63 +350,101 @@ class ReadingContentProvider with ChangeNotifier {
     return false;
   }
 
-  /// Submit quiz and calculate score
+  /// Submit quiz and calculate score with improved error handling and retry logic
   Future<Map<String, dynamic>> submitQuiz() async {
-    if (_content == null) {
+    if (_content == null || !_authProvider.isAuthenticated || _authProvider.token == null) {
       return {
         'success': false,
-        'error': 'No content loaded',
+        'error': 'No content loaded or user not authenticated',
       };
     }
 
-    // Calculate score
-    int correctAnswers = 0;
-    for (int i = 0; i < _quizQuestions.length; i++) {
-      // Note: Backend doesn't send correctAnswer, so we need to submit answers
-      // and backend will validate them
-      if (_userAnswers[i] != null) {
-        correctAnswers++; // Temporary - backend will validate
-      }
-    }
+    // Calculate score based on correct answers
+    int correctAnswers = _questionAnsweredCorrectly.where((correct) => correct).length;
+    _score = correctAnswers;
 
-    // Submit answers to backend
+    // Submit answers to backend with retry logic
     try {
-      final response = await http.post(
-        Uri.parse('${EnvironmentConfig.fullApiUrl}/reading/chapters/${_content!.readingChapterId}/quiz/submit'),
-        headers: {
-          'Authorization': 'Bearer ${_authProvider.token}',
-          'Origin': EnvironmentConfig.apiBaseUrl,
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'answers': _userAnswers,
-        }),
-      );
+      int retryCount = 0;
+      const maxRetries = 2;
+      
+      while (retryCount <= maxRetries) {
+        try {
+          final response = await http.post(
+            Uri.parse('${EnvironmentConfig.fullApiUrl}/reading/chapters/${_content!.readingChapterId}/complete'),
+            headers: {
+              'Authorization': 'Bearer ${_authProvider.token}',
+              'Origin': EnvironmentConfig.apiBaseUrl,
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'score': _score,
+            }),
+          ).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final result = json.decode(response.body);
-        final data = result['data'];
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            final result = json.decode(response.body);
+            final data = result['data'];
 
-        _score = data['score'] as int;
-        final passed = data['passed'] as bool;
+            _score = (data['score'] as num).toInt();
+            final chapterCompleted = data['chapterCompleted'] as bool;
+            final nextChapterUnlocked = data['nextChapterUnlocked'] as bool? ?? false;
+            final nextChapterId = data['nextChapterId'] as String?;
 
-        return {
-          'success': true,
-          'score': _score,
-          'passed': passed,
-          'totalQuestions': totalQuestions,
-        };
-      } else {
-        return {
-          'success': false,
-          'error': 'Failed to submit quiz: ${response.statusCode}',
-        };
+            return {
+              'success': true,
+              'score': _score,
+              'chapterCompleted': chapterCompleted,
+              'nextChapterUnlocked': nextChapterUnlocked,
+              'nextChapterId': nextChapterId,
+              'totalQuestions': totalQuestions,
+            };
+          } else if (response.statusCode == 401) {
+            // Token expired, try to refresh using the new method
+            try {
+              final refreshSuccess = await _authProvider.refreshToken();
+              if (!refreshSuccess) {
+                return {
+                  'success': false,
+                  'error': 'Error al renovar el token de acceso',
+                };
+              }
+            } catch (e) {
+              debugPrint('Error al renovar token: $e');
+              return {
+                'success': false,
+                'error': 'Error al renovar el token de acceso',
+              };
+            }
+            retryCount++;
+            await Future.delayed(Duration(milliseconds: 500 * retryCount));
+          } else {
+            return {
+              'success': false,
+              'error': 'Failed to submit quiz: ${response.statusCode}',
+            };
+          }
+        } catch (e) {
+          retryCount++;
+          if (retryCount > maxRetries) {
+            return {
+              'success': false,
+              'error': 'Network error after multiple attempts: $e',
+            };
+          }
+          await Future.delayed(Duration(milliseconds: 500 * retryCount));
+        }
       }
+      
+      return {
+        'success': false,
+        'error': 'Maximum retries exceeded',
+      };
     } catch (e) {
       return {
         'success': false,
-        'error': 'Network error: $e',
+        'error': 'Unexpected error: $e',
       };
     }
   }
@@ -347,6 +469,7 @@ class ReadingContentProvider with ChangeNotifier {
 
   /// Reset only quiz state (for retrying)
   void resetQuiz() {
+    _isQuizMode = false;
     _currentQuestionIndex = 0;
     _userAnswers = List.filled(_quizQuestions.length, null);
     _score = 0;
@@ -354,6 +477,41 @@ class ReadingContentProvider with ChangeNotifier {
     _hasAttemptedOnce = false;
     _questionAnsweredCorrectly = List.filled(_quizQuestions.length, false);
     _wrongAnswersCount = 0;
+    _selectedAnswerIndex = null;
+    _showCorrectAnswer = false;
     notifyListeners();
+  }
+  
+  /// Reset quiz and retry
+  Future<void> resetQuizAndRetry() async {
+    _userAnswers = List.filled(_quizQuestions.length, null);
+    _currentQuestionIndex = 0;
+    _score = 0;
+    _showHint = false;
+    _hasAttemptedOnce = false;
+    _selectedAnswerIndex = null;
+    _showCorrectAnswer = false;
+    _wrongAnswersCount = 0;
+    _questionAnsweredCorrectly = List.filled(_quizQuestions.length, false);
+    notifyListeners();
+  }
+  
+  /// Set the selected answer (for immediate visual feedback)
+  void setSelectedAnswer(int index) {
+    _selectedAnswerIndex = index;
+    notifyListeners();
+  }
+  
+  /// Show the correct answer after second wrong attempt
+  void displayCorrectAnswer() {
+    _showCorrectAnswer = true;
+    notifyListeners();
+    
+    // Auto-hide after delay
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      // No need to check mounted as this is a provider, not a widget
+      _showCorrectAnswer = false;
+      notifyListeners();
+    });
   }
 }

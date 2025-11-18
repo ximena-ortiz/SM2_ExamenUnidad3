@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.8.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -62,7 +62,19 @@ dependencies:
   vibration: ^2.0.0
 
   # HTTP requests
-  http: ^1.1.0
+  http: ^1.5.0
+
+  # 3D Model viewer
+  flutter_3d_controller: ^2.3.0
+
+  # Path provider for storage
+  path_provider: ^2.1.4
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # Audio recording
+  record: ^5.0.4
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +83,8 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  mockito: ^5.4.4
+  build_runner: ^2.4.8
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -96,6 +110,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icons/
+    - assets/models/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -122,3 +137,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Override dependencies to avoid Linux platform issues
+dependency_overrides:
+  record_linux: ^1.0.0

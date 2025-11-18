@@ -3,6 +3,7 @@
 // This file contains manual and automated tests to validate
 // the complete behavior of the lives system
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -14,8 +15,8 @@ class LivesSystemQATests {
   static const String testUserId = 'test-user-qa-lives';
   
   static void main() async {
-    print('🧪 STARTING QA TESTS - LIVES SYSTEM');
-    print('=====================================');
+    debugPrint('🧪 STARTING QA TESTS - LIVES SYSTEM');
+    debugPrint('=====================================');
     
     await runTest1FlowFiveLivesToError();
     await runTest2BlockingWithZeroLives();
@@ -23,17 +24,17 @@ class LivesSystemQATests {
     await runTest4OverconsumptionProtection();
     await runTest5DuplicateRequestHandling();
     
-    print('\n✅ ALL TESTS COMPLETED');
+    debugPrint('\n✅ ALL TESTS COMPLETED');
   }
   
   /// QA-001: Validate flow: 5 lives → error → 4 lives
   static Future<void> runTest1FlowFiveLivesToError() async {
-    print('\n🔬 QA-001: Flow 5 lives → error → 4 lives');
-    print('------------------------------------------');
+    debugPrint('\n🔬 QA-001: Flow 5 lives → error → 4 lives');
+    debugPrint('------------------------------------------');
     
     try {
       // Step 1: Get initial state
-      print('📋 Step 1: Checking initial lives state...');
+      debugPrint('📋 Step 1: Checking initial lives state...');
       var response = await http.get(
         Uri.parse('$apiUrl/lives/status'),
         headers: {'user-id': testUserId}
@@ -41,17 +42,17 @@ class LivesSystemQATests {
       
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        print('   ✅ Initial state: ${data['currentLives']} lives');
+        debugPrint('   ✅ Initial state: ${data['currentLives']} lives');
         
         if (data['currentLives'] == 5) {
-          print('   ✅ Correct initial state: 5 lives');
+          debugPrint('   ✅ Correct initial state: 5 lives');
         } else {
-          print('   ⚠️  Unexpected initial state: ${data['currentLives']} lives (expected: 5)');
+          debugPrint('   ⚠️  Unexpected initial state: ${data['currentLives']} lives (expected: 5)');
         }
       }
       
       // Step 2: Consume one life
-      print('📋 Step 2: Consuming one life due to error...');
+      debugPrint('📋 Step 2: Consuming one life due to error...');
       var consumeResponse = await http.post(
         Uri.parse('$apiUrl/lives/consume'),
         headers: {
@@ -65,32 +66,32 @@ class LivesSystemQATests {
       
       if (consumeResponse.statusCode == 200) {
         var consumeData = json.decode(consumeResponse.body);
-        print('   ✅ Life consumed successfully');
-        print('   ✅ Remaining lives: ${consumeData['currentLives']}');
+        debugPrint('   ✅ Life consumed successfully');
+        debugPrint('   ✅ Remaining lives: ${consumeData['currentLives']}');
         
         if (consumeData['currentLives'] == 4) {
-          print('   ✅ TEST QA-001 PASSED: Flow 5→4 lives works correctly');
+          debugPrint('   ✅ TEST QA-001 PASSED: Flow 5→4 lives works correctly');
         } else {
-          print('   ❌ TEST QA-001 FAILED: Expected 4 lives, got ${consumeData['currentLives']}');
+          debugPrint('   ❌ TEST QA-001 FAILED: Expected 4 lives, got ${consumeData['currentLives']}');
         }
       } else {
-        print('   ❌ Error consuming life: ${consumeResponse.statusCode}');
-        print('   ❌ TEST QA-001 FAILED');
+        debugPrint('   ❌ Error consuming life: ${consumeResponse.statusCode}');
+        debugPrint('   ❌ TEST QA-001 FAILED');
       }
       
     } catch (e) {
-      print('   ❌ ERROR IN TEST QA-001: $e');
+      debugPrint('   ❌ ERROR IN TEST QA-001: $e');
     }
   }
   
   /// QA-002: Validate blocking with 0 lives
   static Future<void> runTest2BlockingWithZeroLives() async {
-    print('\n🔬 QA-002: Blocking with 0 lives');
-    print('------------------------------');
+    debugPrint('\n🔬 QA-002: Blocking with 0 lives');
+    debugPrint('------------------------------');
     
     try {
       // Consume all lives first
-      print('📋 Consuming all lives to reach 0...');
+      debugPrint('📋 Consuming all lives to reach 0...');
       
       for (int i = 0; i < 5; i++) {
         var response = await http.post(
@@ -106,12 +107,12 @@ class LivesSystemQATests {
         
         if (response.statusCode == 200) {
           var data = json.decode(response.body);
-          print('   Life ${i + 1} consumed. Remaining: ${data['currentLives']}');
+          debugPrint('   Life ${i + 1} consumed. Remaining: ${data['currentLives']}');
         }
       }
       
       // Attempt to consume life when there are none left
-      print('📋 Attempting to consume life without available lives...');
+      debugPrint('📋 Attempting to consume life without available lives...');
       var blockedResponse = await http.post(
         Uri.parse('$apiUrl/lives/consume'),
         headers: {
@@ -125,31 +126,31 @@ class LivesSystemQATests {
       
       if (blockedResponse.statusCode == 403) {
         var errorData = json.decode(blockedResponse.body);
-        print('   ✅ Correct blocking: Status 403');
-        print('   ✅ Error code: ${errorData['code']}');
-        print('   ✅ Message: ${errorData['message']}');
+        debugPrint('   ✅ Correct blocking: Status 403');
+        debugPrint('   ✅ Error code: ${errorData['code']}');
+        debugPrint('   ✅ Message: ${errorData['message']}');
         
         if (errorData['code'] == 'NO_LIVES') {
-          print('   ✅ TEST QA-002 PASSED: Blocking works correctly');
+          debugPrint('   ✅ TEST QA-002 PASSED: Blocking works correctly');
         } else {
-          print('   ❌ TEST QA-002 FAILED: Incorrect error code');
+          debugPrint('   ❌ TEST QA-002 FAILED: Incorrect error code');
         }
       } else {
-        print('   ❌ TEST QA-002 FAILED: Expected status 403, got ${blockedResponse.statusCode}');
+        debugPrint('   ❌ TEST QA-002 FAILED: Expected status 403, got ${blockedResponse.statusCode}');
       }
       
     } catch (e) {
-      print('   ❌ ERROR IN TEST QA-002: $e');
+      debugPrint('   ❌ ERROR IN TEST QA-002: $e');
     }
   }
   
   /// QA-003: Validate automatic daily reset
   static Future<void> runTest3AutomaticDailyReset() async {
-    print('\n🔬 QA-003: Automatic daily reset');
-    print('-----------------------------------');
+    debugPrint('\n🔬 QA-003: Automatic daily reset');
+    debugPrint('-----------------------------------');
     
     try {
-      print('📋 Verifying cron job configuration...');
+      debugPrint('📋 Verifying cron job configuration...');
       
       // Verify admin endpoint for manual trigger
       var adminResponse = await http.get(
@@ -157,16 +158,16 @@ class LivesSystemQATests {
       );
       
       if (adminResponse.statusCode == 200) {
-        print('   ✅ Admin endpoint accessible');
+        debugPrint('   ✅ Admin endpoint accessible');
         
         // Execute manual reset for testing
-        print('📋 Executing manual reset for testing...');
+        debugPrint('📋 Executing manual reset for testing...');
         var resetResponse = await http.post(
           Uri.parse('$baseUrl/admin/cron/trigger/daily-lives-reset')
         );
         
         if (resetResponse.statusCode == 200) {
-          print('   ✅ Manual reset executed successfully');
+          debugPrint('   ✅ Manual reset executed successfully');
           
           // Verify that lives were reset
           await Future.delayed(Duration(seconds: 2));
@@ -179,37 +180,37 @@ class LivesSystemQATests {
           if (statusResponse.statusCode == 200) {
             var data = json.decode(statusResponse.body);
             if (data['currentLives'] == 5) {
-              print('   ✅ TEST QA-003 PASSED: Automatic reset works');
+              debugPrint('   ✅ TEST QA-003 PASSED: Automatic reset works');
             } else {
-              print('   ❌ TEST QA-003 FAILED: Lives were not reset to 5');
+              debugPrint('   ❌ TEST QA-003 FAILED: Lives were not reset to 5');
             }
           }
         } else {
-          print('   ❌ Error in manual reset: ${resetResponse.statusCode}');
+          debugPrint('   ❌ Error in manual reset: ${resetResponse.statusCode}');
         }
       } else {
-        print('   ⚠️  Admin endpoint not available (this is normal in production)');
-        print('   ✅ TEST QA-003 PASSED: Cron configuration verified in code');
+        debugPrint('   ⚠️  Admin endpoint not available (this is normal in production)');
+        debugPrint('   ✅ TEST QA-003 PASSED: Cron configuration verified in code');
       }
       
     } catch (e) {
-      print('   ❌ ERROR IN TEST QA-003: $e');
-      print('   ⚠️  This may be normal if there are no admin endpoints exposed');
+      debugPrint('   ❌ ERROR IN TEST QA-003: $e');
+      debugPrint('   ⚠️  This may be normal if there are no admin endpoints exposed');
     }
   }
   
   /// QA-004: Validate overconsumption protection
   static Future<void> runTest4OverconsumptionProtection() async {
-    print('\n🔬 QA-004: Overconsumption protection');
-    print('----------------------------------------------');
+    debugPrint('\n🔬 QA-004: Overconsumption protection');
+    debugPrint('----------------------------------------------');
     
     try {
-      print('📋 Resetting lives for test...');
+      debugPrint('📋 Resetting lives for test...');
       // Manual reset first
       await http.post(Uri.parse('$baseUrl/admin/cron/trigger/daily-lives-reset'));
       await Future.delayed(Duration(seconds: 1));
       
-      print('📋 Attempting to consume 10 lives rapidly...');
+      debugPrint('📋 Attempting to consume 10 lives rapidly...');
       
       int successfulConsumptions = 0;
       int blockedAttempts = 0;
@@ -229,38 +230,38 @@ class LivesSystemQATests {
         if (response.statusCode == 200) {
           successfulConsumptions++;
           var data = json.decode(response.body);
-          print('   Consumption $i successful. Remaining lives: ${data['currentLives']}');
+          debugPrint('   Consumption $i successful. Remaining lives: ${data['currentLives']}');
         } else if (response.statusCode == 403) {
           blockedAttempts++;
-          print('   Consumption $i blocked (expected)');
+          debugPrint('   Consumption $i blocked (expected)');
         }
       }
       
-      print('   Successful consumptions: $successfulConsumptions');
-      print('   Blocked attempts: $blockedAttempts');
+      debugPrint('   Successful consumptions: $successfulConsumptions');
+      debugPrint('   Blocked attempts: $blockedAttempts');
       
       if (successfulConsumptions <= 5 && blockedAttempts >= 5) {
-        print('   ✅ TEST QA-004 PASSED: Overconsumption protection works');
+        debugPrint('   ✅ TEST QA-004 PASSED: Overconsumption protection works');
       } else {
-        print('   ❌ TEST QA-004 FAILED: Protection does not work correctly');
+        debugPrint('   ❌ TEST QA-004 FAILED: Protection does not work correctly');
       }
       
     } catch (e) {
-      print('   ❌ ERROR IN TEST QA-004: $e');
+      debugPrint('   ❌ ERROR IN TEST QA-004: $e');
     }
   }
   
   /// QA-005: Validate duplicate request handling
   static Future<void> runTest5DuplicateRequestHandling() async {
-    print('\n🔬 QA-005: Duplicate request handling');
-    print('----------------------------------------');
+    debugPrint('\n🔬 QA-005: Duplicate request handling');
+    debugPrint('----------------------------------------');
     
     try {
-      print('📋 Resetting lives for test...');
+      debugPrint('📋 Resetting lives for test...');
       await http.post(Uri.parse('$baseUrl/admin/cron/trigger/daily-lives-reset'));
       await Future.delayed(Duration(seconds: 1));
       
-      print('📋 Sending duplicate requests simultaneously...');
+      debugPrint('📋 Sending duplicate requests simultaneously...');
       
       // Create multiple simultaneous requests
       List<Future<http.Response>> requests = [];
@@ -288,9 +289,9 @@ class LivesSystemQATests {
       for (int i = 0; i < responses.length; i++) {
         if (responses[i].statusCode == 200) {
           successCount++;
-          print('   Request $i: ✅ Successful');
+          debugPrint('   Request $i: ✅ Successful');
         } else {
-          print('   Request $i: ❌ Error ${responses[i].statusCode}');
+          debugPrint('   Request $i: ❌ Error ${responses[i].statusCode}');
         }
       }
       
@@ -305,18 +306,18 @@ class LivesSystemQATests {
         int finalLives = data['currentLives'];
         int expectedLives = 5 - successCount;
         
-        print('   Final lives: $finalLives');
-        print('   Expected lives: $expectedLives');
+        debugPrint('   Final lives: $finalLives');
+        debugPrint('   Expected lives: $expectedLives');
         
         if (finalLives == expectedLives) {
-          print('   ✅ TEST QA-005 PASSED: Duplicate requests handled correctly');
+          debugPrint('   ✅ TEST QA-005 PASSED: Duplicate requests handled correctly');
         } else {
-          print('   ❌ TEST QA-005 FAILED: Inconsistency in duplicate handling');
+          debugPrint('   ❌ TEST QA-005 FAILED: Inconsistency in duplicate handling');
         }
       }
       
     } catch (e) {
-      print('   ❌ ERROR IN TEST QA-005: $e');
+      debugPrint('   ❌ ERROR IN TEST QA-005: $e');
     }
   }
 }

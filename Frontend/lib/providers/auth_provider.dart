@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../l10n/app_localizations.dart';
-import '../utils/api_service.dart';
 import '../utils/environment_config.dart';
 
 enum AuthState {
@@ -18,13 +19,14 @@ class AuthProvider with ChangeNotifier {
   static const String _isLoggedInKey = 'is_logged_in';
   static const String _tokenKey = 'auth_token';
   static const String _refreshTokenKey = 'refresh_token';
-  
+  static const String _refreshTokenCookieKey = 'refresh_token_cookie';
+
   AuthState _authState = AuthState.initial;
   UserModel? _user;
   String? _errorMessage;
   String? _accessToken;
   String? _refreshToken;
-  final ApiService _apiService = ApiService();
+  String? _refreshTokenCookie; // Cookie string for HttpOnly refresh token
   
   AuthState get authState => _authState;
   UserModel? get user => _user;
@@ -125,29 +127,44 @@ class AuthProvider with ChangeNotifier {
       // Log configuration for debugging
       if (EnvironmentConfig.isDevelopment) {
         EnvironmentConfig.logConfiguration();
-        print('🔄 Making login request to: ${EnvironmentConfig.loginEndpoint}');
-        print('📤 Request body: $requestBody');
+        debugPrint('🔄 Making login request to: ${EnvironmentConfig.loginEndpoint}');
+        debugPrint('📤 Request body: $requestBody');
       }
       
-      // Make API call to backend
-      final response = await _apiService.post(
-        EnvironmentConfig.loginEndpoint,
-        body: requestBody,
-        withCredentials: true,
+      // Make API call to backend - use http directly to capture cookies
+      final httpResponse = await http.post(
+        Uri.parse(EnvironmentConfig.loginEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Origin': EnvironmentConfig.apiBaseUrl,
+        },
+        body: jsonEncode(requestBody),
       );
-      
+
       if (EnvironmentConfig.isDevelopment) {
-        print('📥 Login response: ${response.statusCode} - ${response.message}');
-        print('📊 Response data: ${response.data}');
+        debugPrint('📥 Login response: ${httpResponse.statusCode}');
+        debugPrint('📊 Response data: ${httpResponse.body}');
+        debugPrint('🍪 Cookies: ${httpResponse.headers['set-cookie']}');
       }
-      
-      if (response.success) {
+
+      if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         // Parse response data
-        final responseData = response.data as Map<String, dynamic>?;
-        
+        final responseData = jsonDecode(httpResponse.body) as Map<String, dynamic>?;
+
         if (responseData != null) {
           // Extract tokens from LoginResponseDto structure
           _accessToken = responseData['accessToken'] as String?;
+
+          // Extract refresh token cookie from Set-Cookie header
+          final setCookieHeader = httpResponse.headers['set-cookie'];
+          if (setCookieHeader != null) {
+            _refreshTokenCookie = _extractRefreshTokenCookie(setCookieHeader);
+            if (EnvironmentConfig.isDevelopment) {
+              debugPrint('🍪 Extracted refresh token cookie: $_refreshTokenCookie');
+            }
+          }
           // Note: refreshToken comes in HttpOnly cookie, not in response body as per backend security
           
           // Create user from LoginResponseDto fields
@@ -173,11 +190,14 @@ class AuthProvider with ChangeNotifier {
           throw Exception('Invalid response format');
         }
       } else {
-        throw Exception(response.message);
+        // Handle error response
+        final errorData = jsonDecode(httpResponse.body) as Map<String, dynamic>?;
+        final errorMessage = errorData?['message'] ?? 'Login failed';
+        throw Exception(errorMessage);
       }
     } catch (e) {
       if (EnvironmentConfig.isDevelopment) {
-        print('❌ Login error: $e');
+        debugPrint('❌ Login error: $e');
       }
       _authState = AuthState.unauthenticated;
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -324,22 +344,44 @@ class AuthProvider with ChangeNotifier {
       // Log configuration for debugging
       if (EnvironmentConfig.isDevelopment) {
         EnvironmentConfig.logConfiguration();
+        debugPrint('🔄 Making register request to: ${EnvironmentConfig.registerEndpoint}');
+        debugPrint('📤 Request body: $requestBody');
       }
-      
-      // Make API call
-      final response = await _apiService.post(
-        EnvironmentConfig.registerEndpoint,
-        body: requestBody,
-        withCredentials: true,
+
+      // Make API call - use http directly to capture cookies
+      final httpResponse = await http.post(
+        Uri.parse(EnvironmentConfig.registerEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Origin': EnvironmentConfig.apiBaseUrl,
+        },
+        body: jsonEncode(requestBody),
       );
-      
-      if (response.success) {
+
+      if (EnvironmentConfig.isDevelopment) {
+        debugPrint('📥 Register response: ${httpResponse.statusCode}');
+        debugPrint('📊 Response data: ${httpResponse.body}');
+        debugPrint('🍪 Cookies: ${httpResponse.headers['set-cookie']}');
+      }
+
+      if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         // Parse response data
-        final responseData = response.data as Map<String, dynamic>?;
-        
+        final responseData = jsonDecode(httpResponse.body) as Map<String, dynamic>?;
+
         if (responseData != null) {
           // Extract tokens from RegisterResponseDto structure
           _accessToken = responseData['accessToken'] as String?;
+
+          // Extract refresh token cookie from Set-Cookie header
+          final setCookieHeader = httpResponse.headers['set-cookie'];
+          if (setCookieHeader != null) {
+            _refreshTokenCookie = _extractRefreshTokenCookie(setCookieHeader);
+            if (EnvironmentConfig.isDevelopment) {
+              debugPrint('🍪 Extracted refresh token cookie: $_refreshTokenCookie');
+            }
+          }
           // Note: refreshToken comes in HttpOnly cookie, not in response body as per backend security
           _refreshToken = null; // Set to null since it comes via cookie
           
@@ -364,9 +406,15 @@ class AuthProvider with ChangeNotifier {
           throw Exception('Invalid response format');
         }
       } else {
-        throw Exception(response.message);
+        // Handle error response
+        final errorData = jsonDecode(httpResponse.body) as Map<String, dynamic>?;
+        final errorMessage = errorData?['message'] ?? 'Registration failed';
+        throw Exception(errorMessage);
       }
     } catch (e) {
+      if (EnvironmentConfig.isDevelopment) {
+        debugPrint('❌ Register error: $e');
+      }
       _authState = AuthState.unauthenticated;
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       notifyListeners();
@@ -440,19 +488,163 @@ class AuthProvider with ChangeNotifier {
     if (_refreshToken != null) {
       await prefs.setString(_refreshTokenKey, _refreshToken!);
     }
+    if (_refreshTokenCookie != null) {
+      await prefs.setString(_refreshTokenCookieKey, _refreshTokenCookie!);
+    }
   }
-  
+
   Future<void> _loadTokens() async {
     final prefs = await SharedPreferences.getInstance();
     _accessToken = prefs.getString(_tokenKey);
     _refreshToken = prefs.getString(_refreshTokenKey);
+    _refreshTokenCookie = prefs.getString(_refreshTokenCookieKey);
   }
   
   Future<void> _clearTokens() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
     await prefs.remove(_refreshTokenKey);
+    await prefs.remove(_refreshTokenCookieKey);
     _accessToken = null;
     _refreshToken = null;
+    _refreshTokenCookie = null;
+  }
+
+  /// Extract refresh token cookie from Set-Cookie header
+  String? _extractRefreshTokenCookie(String setCookieHeader) {
+    try {
+      // The set-cookie header may contain multiple cookies separated by commas
+      // We need to find the one named "refreshToken"
+      final cookies = setCookieHeader.split(',');
+
+      for (final cookie in cookies) {
+        final trimmed = cookie.trim();
+        if (trimmed.startsWith('refreshToken=')) {
+          // Extract just the cookie name=value part (before any attributes like Path, HttpOnly, etc.)
+          final parts = trimmed.split(';');
+          if (parts.isNotEmpty) {
+            return parts[0].trim(); // Returns "refreshToken=<value>"
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error extracting refresh token cookie: $e');
+      return null;
+    }
+  }
+  
+  /// Intenta renovar el token de acceso
+  /// Retorna true si la renovación fue exitosa, false en caso contrario
+  Future<bool> refreshToken() async {
+    if (_authState != AuthState.authenticated) {
+      return false;
+    }
+
+    try {
+      // Load tokens if not in memory
+      if (_refreshTokenCookie == null) {
+        await _loadTokens();
+      }
+
+      // Si no hay cookie de refresh token, intentar auto-login
+      if (_refreshTokenCookie == null) {
+        debugPrint('No refresh token cookie available, attempting auto-login');
+        return await autoLogin();
+      }
+
+      if (EnvironmentConfig.isDevelopment) {
+        debugPrint('🔄 Attempting token refresh with cookie: $_refreshTokenCookie');
+      }
+
+      // Intentar renovar el token usando el endpoint de refresh
+      final response = await http.post(
+        Uri.parse(EnvironmentConfig.refreshTokenEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Cookie': _refreshTokenCookie!, // Send refresh token cookie
+          'X-Requested-With': 'XMLHttpRequest',
+          'Origin': EnvironmentConfig.apiBaseUrl,
+        },
+      );
+
+      if (EnvironmentConfig.isDevelopment) {
+        debugPrint('📥 Refresh response: ${response.statusCode}');
+        debugPrint('🍪 New cookies: ${response.headers['set-cookie']}');
+      }
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        _accessToken = responseData['accessToken'] as String?;
+
+        // Extract new refresh token cookie if provided (token rotation)
+        final setCookieHeader = response.headers['set-cookie'];
+        if (setCookieHeader != null) {
+          _refreshTokenCookie = _extractRefreshTokenCookie(setCookieHeader);
+          if (EnvironmentConfig.isDevelopment) {
+            debugPrint('🍪 New refresh token cookie: $_refreshTokenCookie');
+          }
+        }
+
+        if (_accessToken != null) {
+          await _saveTokens();
+          if (EnvironmentConfig.isDevelopment) {
+            debugPrint('✅ Token refreshed successfully');
+          }
+          return true;
+        }
+      }
+
+      // Si la renovación falla, intentar auto-login como fallback
+      debugPrint('⚠️ Refresh failed with status ${response.statusCode}, attempting auto-login');
+      return await autoLogin();
+    } catch (e) {
+      debugPrint('❌ Error al renovar token: $e');
+      return false;
+    }
+  }
+  
+  /// Intenta iniciar sesión automáticamente usando los datos guardados
+  /// Retorna true si el auto-login fue exitoso, false en caso contrario
+  Future<bool> autoLogin() async {
+    try {
+      // Cargar tokens guardados
+      await _loadTokens();
+      
+      // Si no hay token de acceso, no podemos hacer auto-login
+      if (_accessToken == null) {
+        return false;
+      }
+      
+      // Verificar si el token es válido haciendo una petición al endpoint de verificación
+      final response = await http.get(
+        Uri.parse('${EnvironmentConfig.authEndpoint}/verify'),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        // Token válido, cargar datos del usuario
+        final userData = await SharedPreferences.getInstance().then(
+          (prefs) => prefs.getString(_userKey),
+        );
+        
+        if (userData != null) {
+          _user = UserModel.fromJson(userData);
+          _authState = AuthState.authenticated;
+          notifyListeners();
+          return true;
+        }
+      }
+      
+      // Si el token no es válido o no hay datos de usuario, limpiar tokens
+      await _clearTokens();
+      return false;
+    } catch (e) {
+      debugPrint('Error en auto-login: $e');
+      return false;
+    }
   }
 }

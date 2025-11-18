@@ -46,7 +46,12 @@
   "initializingExperience": "Inicializando tu experiencia de aprendizaje...",
   "or": "O",
   "user": "Usuario",
-  "livesRemaining": "5/5",
+  "livesRemaining": "{lives}/5",
+  "@livesRemaining": {
+    "placeholders": {
+      "lives": { "type": "int", "example": "3" }
+    }
+  },
   "chapterProgress": "Cap 4/5",
   "software": "Software",
   "databases": "Bases de Datos",

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/vocabulary_practice_provider.dart';
@@ -341,7 +341,7 @@ class _VocabularyPracticeScreenState extends State<VocabularyPracticeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color, width: 2),
       ),
@@ -368,3 +368,4 @@ class _VocabularyPracticeScreenState extends State<VocabularyPracticeScreen> {
     );
   }
 }
+

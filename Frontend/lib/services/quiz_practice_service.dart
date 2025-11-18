@@ -15,7 +15,7 @@ class QuizPracticeSession {
   final DateTime? endedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   // Quiz-specific fields
   final int totalQuestions;
   final int answeredQuestions;
@@ -25,7 +25,7 @@ class QuizPracticeSession {
   final String difficultyLevel;
   final int timeSpentSeconds;
   final List<QuestionResult> questionResults;
-  
+
   QuizPracticeSession({
     required this.id,
     required this.userId,
@@ -48,7 +48,7 @@ class QuizPracticeSession {
     required this.timeSpentSeconds,
     required this.questionResults,
   });
-  
+
   factory QuizPracticeSession.fromJson(Map<String, dynamic> json) {
     return QuizPracticeSession(
       id: json['id'] ?? '',
@@ -59,10 +59,16 @@ class QuizPracticeSession {
       score: (json['score'] ?? 0).toDouble(),
       maxScore: (json['maxScore'] ?? 0).toDouble(),
       status: json['status'] ?? 'started',
-      startedAt: DateTime.parse(json['startedAt'] ?? DateTime.now().toIso8601String()),
+      startedAt: DateTime.parse(
+        json['startedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       endedAt: json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       totalQuestions: json['totalQuestions'] ?? 0,
       answeredQuestions: json['answeredQuestions'] ?? 0,
       correctAnswers: json['correctAnswers'] ?? 0,
@@ -70,9 +76,11 @@ class QuizPracticeSession {
       quizCategory: json['quizCategory'] ?? 'general',
       difficultyLevel: json['difficultyLevel'] ?? 'beginner',
       timeSpentSeconds: json['timeSpentSeconds'] ?? 0,
-      questionResults: (json['questionResults'] as List<dynamic>?)
-          ?.map((result) => QuestionResult.fromJson(result))
-          .toList() ?? [],
+      questionResults:
+          (json['questionResults'] as List<dynamic>?)
+              ?.map((result) => QuestionResult.fromJson(result))
+              .toList() ??
+          [],
     );
   }
 }
@@ -86,7 +94,7 @@ class QuestionResult {
   final bool isCorrect;
   final int timeSpentSeconds;
   final DateTime answeredAt;
-  
+
   QuestionResult({
     required this.questionNumber,
     required this.question,
@@ -97,7 +105,7 @@ class QuestionResult {
     required this.timeSpentSeconds,
     required this.answeredAt,
   });
-  
+
   factory QuestionResult.fromJson(Map<String, dynamic> json) {
     return QuestionResult(
       questionNumber: json['questionNumber'] ?? 0,
@@ -107,10 +115,12 @@ class QuestionResult {
       userAnswer: json['userAnswer'],
       isCorrect: json['isCorrect'] ?? false,
       timeSpentSeconds: json['timeSpentSeconds'] ?? 0,
-      answeredAt: DateTime.parse(json['answeredAt'] ?? DateTime.now().toIso8601String()),
+      answeredAt: DateTime.parse(
+        json['answeredAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'questionNumber': questionNumber,
@@ -135,7 +145,7 @@ class QuizStats {
   final int averageTimePerQuestion;
   final DateTime? lastSessionDate;
   final String favoriteCategory;
-  
+
   QuizStats({
     required this.totalSessions,
     required this.completedSessions,
@@ -147,7 +157,7 @@ class QuizStats {
     this.lastSessionDate,
     required this.favoriteCategory,
   });
-  
+
   factory QuizStats.fromJson(Map<String, dynamic> json) {
     return QuizStats(
       totalSessions: json['totalSessions'] ?? 0,
@@ -157,8 +167,8 @@ class QuizStats {
       totalQuestionsAnswered: json['totalQuestionsAnswered'] ?? 0,
       totalCorrectAnswers: json['totalCorrectAnswers'] ?? 0,
       averageTimePerQuestion: json['averageTimePerQuestion'] ?? 0,
-      lastSessionDate: json['lastSessionDate'] != null 
-          ? DateTime.parse(json['lastSessionDate']) 
+      lastSessionDate: json['lastSessionDate'] != null
+          ? DateTime.parse(json['lastSessionDate'])
           : null,
       favoriteCategory: json['favoriteCategory'] ?? 'general',
     );
@@ -168,7 +178,7 @@ class QuizStats {
 class QuizPracticeService extends BasePracticeService {
   @override
   String get baseEndpoint => 'practices/quiz';
-  
+
   // Create a new quiz practice session
   Future<QuizPracticeSession?> createQuizSession({
     required String token,
@@ -188,11 +198,11 @@ class QuizPracticeService extends BasePracticeService {
       'difficultyLevel': difficultyLevel,
       'totalQuestions': totalQuestions,
     };
-    
+
     final response = await createPracticeSession(practiceData, token);
     return parseResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Get quiz practice session
   Future<QuizPracticeSession?> getQuizSession(
     String sessionId,
@@ -201,7 +211,7 @@ class QuizPracticeService extends BasePracticeService {
     final response = await getPracticeSession(sessionId, token);
     return parseResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Update quiz practice session
   Future<QuizPracticeSession?> updateQuizSession({
     required String sessionId,
@@ -216,22 +226,30 @@ class QuizPracticeService extends BasePracticeService {
     List<QuestionResult>? questionResults,
   }) async {
     final updateData = <String, dynamic>{};
-    
+
     if (progress != null) updateData['progress'] = progress;
     if (score != null) updateData['score'] = score;
     if (status != null) updateData['status'] = status;
-    if (answeredQuestions != null) updateData['answeredQuestions'] = answeredQuestions;
-    if (correctAnswers != null) updateData['correctAnswers'] = correctAnswers;
-    if (incorrectAnswers != null) updateData['incorrectAnswers'] = incorrectAnswers;
-    if (timeSpentSeconds != null) updateData['timeSpentSeconds'] = timeSpentSeconds;
-    if (questionResults != null) {
-      updateData['questionResults'] = questionResults.map((result) => result.toJson()).toList();
+    if (answeredQuestions != null) {
+      updateData['answeredQuestions'] = answeredQuestions;
     }
-    
+    if (correctAnswers != null) updateData['correctAnswers'] = correctAnswers;
+    if (incorrectAnswers != null) {
+      updateData['incorrectAnswers'] = incorrectAnswers;
+    }
+    if (timeSpentSeconds != null) {
+      updateData['timeSpentSeconds'] = timeSpentSeconds;
+    }
+    if (questionResults != null) {
+      updateData['questionResults'] = questionResults
+          .map((result) => result.toJson())
+          .toList();
+    }
+
     final response = await updatePracticeSession(sessionId, updateData, token);
     return parseResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Answer a quiz question
   Future<QuizPracticeSession?> answerQuestion({
     required String sessionId,
@@ -240,45 +258,47 @@ class QuizPracticeService extends BasePracticeService {
     required int userAnswer,
     required int timeSpentSeconds,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/answer-question';
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/answer-question';
+
     final answerData = {
       'questionNumber': questionNumber,
       'userAnswer': userAnswer,
       'timeSpentSeconds': timeSpentSeconds,
     };
-    
+
     final response = await apiService.post(
       endpoint,
       body: answerData,
       token: token,
     );
-    
+
     return parseResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Complete quiz session
   Future<QuizPracticeSession?> completeQuiz({
     required String sessionId,
     required String token,
     required int totalTimeSpent,
   }) async {
-    final endpoint = '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/complete';
-    
+    final endpoint =
+        '${EnvironmentConfig.apiBaseUrl}/$baseEndpoint/$sessionId/complete';
+
     final completionData = {
       'totalTimeSpent': totalTimeSpent,
       'status': 'completed',
     };
-    
+
     final response = await apiService.post(
       endpoint,
       body: completionData,
       token: token,
     );
-    
+
     return parseResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Get user quiz sessions
   Future<List<QuizPracticeSession>> getUserQuizSessions({
     required String userId,
@@ -295,7 +315,7 @@ class QuizPracticeService extends BasePracticeService {
     if (difficultyLevel != null) filters['difficultyLevel'] = difficultyLevel;
     if (completed != null) filters['completed'] = completed;
     if (minScore != null) filters['minScore'] = minScore;
-    
+
     final response = await getUserPracticeSessions(
       userId,
       token,
@@ -303,10 +323,10 @@ class QuizPracticeService extends BasePracticeService {
       limit: limit,
       offset: offset,
     );
-    
+
     return parseListResponse(response, QuizPracticeSession.fromJson);
   }
-  
+
   // Get user quiz statistics
   Future<QuizStats?> getUserQuizStats({
     required String userId,
@@ -317,15 +337,17 @@ class QuizPracticeService extends BasePracticeService {
   }) async {
     final additionalFilters = <String, dynamic>{};
     if (category != null) additionalFilters['category'] = category;
-    if (difficultyLevel != null) additionalFilters['difficultyLevel'] = difficultyLevel;
-    
+    if (difficultyLevel != null) {
+      additionalFilters['difficultyLevel'] = difficultyLevel;
+    }
+
     final response = await getUserPracticeStats(
       userId,
       token,
       timeframe: timeframe,
       additionalFilters: additionalFilters,
     );
-    
+
     return parseResponse(response, QuizStats.fromJson);
   }
 }

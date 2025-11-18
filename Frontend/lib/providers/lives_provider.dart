@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_lives_model.dart';
 import '../utils/api_service.dart';
@@ -30,9 +31,12 @@ class LivesProvider with ChangeNotifier {
   final List<Map<String, dynamic>> _pendingActions = [];
   Timer? _retryTimer;
   bool _isOnline = true;
+
+  // Reset handling
+  bool _isResetting = false;
   
   // Configuration
-  static const Duration _refreshInterval = Duration(minutes: 5);
+  static const Duration _refreshInterval = Duration(minutes: 10);
   static const int _maxRetryAttempts = 3;
   static const String _livesKey = 'cached_lives';
   static const String _pendingActionsKey = 'pending_lives_actions';
@@ -47,12 +51,13 @@ class LivesProvider with ChangeNotifier {
   int get currentLives => _dailyLives?.currentLives ?? 0;
   bool get isBlocked => _livesState == LivesState.blocked || currentLives <= 0;
   String? get nextReset => _dailyLives?.nextReset;
+  bool get isResetting => _isResetting;
 
   int get hoursUntilReset {
     if (_dailyLives?.nextReset == null) return 24;
 
     try {
-      final resetTime = DateTime.parse(_dailyLives!.nextReset!);
+      final resetTime = DateTime.parse(_dailyLives!.nextReset);
       final now = DateTime.now();
       final difference = resetTime.difference(now);
 
@@ -88,7 +93,7 @@ class LivesProvider with ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error loading cached lives: $e');
+        debugPrint('Error loading cached lives: $e');
       }
     }
   }
@@ -101,7 +106,7 @@ class LivesProvider with ChangeNotifier {
         await prefs.setString(_livesKey, json.encode(_dailyLives!.toJson()));
       } catch (e) {
         if (kDebugMode) {
-          print('Error caching lives: $e');
+          debugPrint('Error caching lives: $e');
         }
       }
     }
@@ -230,7 +235,7 @@ class LivesProvider with ChangeNotifier {
     await _savePendingActions();
     
     if (kDebugMode) {
-      print('Queued offline action: $action');
+      debugPrint('Queued offline action: $action');
     }
   }
 
@@ -246,7 +251,7 @@ class LivesProvider with ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error loading pending actions: $e');
+        debugPrint('Error loading pending actions: $e');
       }
     }
   }
@@ -258,7 +263,7 @@ class LivesProvider with ChangeNotifier {
       await prefs.setString(_pendingActionsKey, json.encode(_pendingActions));
     } catch (e) {
       if (kDebugMode) {
-        print('Error saving pending actions: $e');
+        debugPrint('Error saving pending actions: $e');
       }
     }
   }
@@ -280,12 +285,12 @@ class LivesProvider with ChangeNotifier {
         await _processAction(action);
         _pendingActions.remove(action);
         if (kDebugMode) {
-          print('Successfully processed offline action: ${action['action']}');
+          debugPrint('Successfully processed offline action: ${action['action']}');
         }
       } catch (e) {
         action['attempts'] = attempts + 1;
         if (kDebugMode) {
-          print('Failed to process action ${action['action']}, attempt ${attempts + 1}: $e');
+          debugPrint('Failed to process action ${action['action']}, attempt ${attempts + 1}: $e');
         }
       }
     }
@@ -302,7 +307,7 @@ class LivesProvider with ChangeNotifier {
         break;
       default:
         if (kDebugMode) {
-          print('Unknown action type: ${action['action']}');
+          debugPrint('Unknown action type: ${action['action']}');
         }
     }
   }
@@ -354,7 +359,7 @@ class LivesProvider with ChangeNotifier {
     _errorMessage = message;
     _setState(LivesState.error);
     if (kDebugMode) {
-      print('LivesProvider Error: $message');
+      debugPrint('LivesProvider Error: $message');
     }
   }
 
@@ -366,9 +371,67 @@ class LivesProvider with ChangeNotifier {
     }
   }
 
-  /// Reset lives (for testing or admin purposes)
+  /// Reset lives (for testing purposes - calls backend endpoint)
   Future<void> resetLives() async {
-    await fetchLivesStatus();
+    // Prevent multiple simultaneous reset calls
+    if (_isResetting) {
+      if (kDebugMode) {
+        debugPrint('Reset already in progress, ignoring...');
+      }
+      return;
+    }
+
+    if (!_authProvider.isAuthenticated || _authProvider.token == null) {
+      if (kDebugMode) {
+        debugPrint('Cannot reset lives: User not authenticated');
+      }
+      return;
+    }
+
+    _isResetting = true;
+    notifyListeners();
+
+    try {
+      if (kDebugMode) {
+        debugPrint('Resetting lives via backend endpoint...');
+      }
+
+      final response = await http.post(
+        Uri.parse('${EnvironmentConfig.fullApiUrl}/lives/reset'),
+        headers: {
+          'Authorization': 'Bearer ${_authProvider.token}',
+          'Content-Type': 'application/json',
+          'Origin': EnvironmentConfig.apiBaseUrl,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        _dailyLives = DailyLivesModel.fromJson(data);
+        _setState(LivesState.loaded);
+        await _cacheLives();
+
+        if (kDebugMode) {
+          debugPrint('Lives reset successful: ${_dailyLives!.currentLives}/5');
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint('Failed to reset lives: ${response.statusCode}');
+        }
+        // Fallback to fetch status
+        await fetchLivesStatus();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error resetting lives: $e');
+      }
+      // Fallback to fetch status
+      await fetchLivesStatus();
+    } finally {
+      _isResetting = false;
+      notifyListeners();
+    }
   }
 
   @override

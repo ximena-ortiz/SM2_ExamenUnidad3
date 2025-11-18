@@ -164,7 +164,6 @@ class _PathPainter extends CustomPainter {
     const double cornerRadius = 20.0;
 
     // Punto intermedio horizontal (a mitad de camino horizontalmente)
-    final double midX = start.dx + (end.dx - start.dx) / 2;
 
     if (movingRight) {
       // Moverse a la derecha primero, luego bajar

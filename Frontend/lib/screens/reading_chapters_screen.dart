@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/reading_chapters_provider.dart';
@@ -34,7 +34,7 @@ class _ReadingChaptersScreenState extends State<ReadingChaptersScreen> {
       final provider = Provider.of<ReadingChaptersProvider>(context, listen: false);
       await provider.fetchChapters();
     } catch (e) {
-      print('Error loading reading chapters: $e');
+      debugPrint('Error loading reading chapters: $e');
     }
   }
 
@@ -47,9 +47,9 @@ class _ReadingChaptersScreenState extends State<ReadingChaptersScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final chaptersProvider = Provider.of<ReadingChaptersProvider>(context);
+    Provider.of<ReadingChaptersProvider>(context);
     final livesProvider = Provider.of<LivesProvider>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
+    Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
@@ -189,7 +189,7 @@ class _ReadingChaptersScreenState extends State<ReadingChaptersScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -311,3 +311,4 @@ class _ReadingChaptersScreenState extends State<ReadingChaptersScreen> {
     );
   }
 }
+

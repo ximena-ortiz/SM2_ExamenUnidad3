@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/chapter_evaluation.dart';
 
@@ -64,10 +64,10 @@ class ChapterEvaluationCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: evaluation.statusColor.withOpacity(0.1),
+                      color: evaluation.statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: evaluation.statusColor.withOpacity(0.3),
+                        color: evaluation.statusColor.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -215,7 +215,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -244,3 +244,4 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
+

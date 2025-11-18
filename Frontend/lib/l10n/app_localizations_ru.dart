@@ -60,6 +60,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get interview => 'Интервью';
 
   @override
+  String get chooseYourPreferredTopic => 'Choose your preferred topic';
+
+  @override
   String get home => 'Главная';
 
   @override
@@ -154,7 +157,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String livesRemaining(int lives) {
-    return '5/5';
+    return '$lives/5';
   }
 
   @override
@@ -669,4 +672,132 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get iUnderstand => 'I Understand';
+
+  @override
+  String get interviewTopicsTitle => 'Interview Topics';
+
+  @override
+  String get loadingInterviewTopics => 'Loading interview topics...';
+
+  @override
+  String get noTopicsAvailable => 'No topics available';
+
+  @override
+  String startInterviewTitle(String topicName) {
+    return 'Start $topicName Interview?';
+  }
+
+  @override
+  String get questions => 'Questions';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get difficulty => 'Difficulty';
+
+  @override
+  String questionsCount(int count) {
+    return '$count questions';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String interviewDash(String topicName) {
+    return 'Interview - $topicName';
+  }
+
+  @override
+  String get voiceRecordingComingSoon => 'Voice Recording - Coming Soon';
+
+  @override
+  String get holdToRecord => 'Hold to record';
+
+  @override
+  String get releaseToSend => 'Release to send';
+
+  @override
+  String get recording => 'Recording...';
+
+  @override
+  String get getResults => 'Get Results';
+
+  @override
+  String get sendingAudio => 'Sending audio...';
+
+  @override
+  String recordedSeconds(int seconds) {
+    return 'Recorded: ${seconds}s';
+  }
+
+  @override
+  String get reRecord => 'Record Again';
+
+  @override
+  String get yourAnswer => 'Your Answer';
+
+  @override
+  String get typeYourAnswerHere => 'Type your answer here...';
+
+  @override
+  String minimumCharacters(int count) {
+    return 'Minimum $count characters';
+  }
+
+  @override
+  String get pleaseEnterAnswer => 'Please enter an answer';
+
+  @override
+  String get submitAnswer => 'Submit Answer';
+
+  @override
+  String get answerEvaluation => 'Answer Evaluation';
+
+  @override
+  String get scoreBreakdown => 'Score Breakdown';
+
+  @override
+  String get viewFinalResults => 'View Final Results';
+
+  @override
+  String get interviewComplete => 'Interview Complete';
+
+  @override
+  String get keepPracticing => 'Keep Practicing!';
+
+  @override
+  String overallScore(String score) {
+    return 'Overall Score: $score/100';
+  }
+
+  @override
+  String get backToTopics => 'Back to Topics';
+
+  @override
+  String get fluency => 'Fluency';
+
+  @override
+  String get grammar => 'Grammar';
+
+  @override
+  String get vocabulary_skill => 'Vocabulary';
+
+  @override
+  String get pronunciation => 'Pronunciation';
+
+  @override
+  String get coherence => 'Coherence';
+
+  @override
+  String get beginner => 'Beginner';
+
+  @override
+  String get intermediate => 'Intermediate';
+
+  @override
+  String get advanced => 'Advanced';
 }

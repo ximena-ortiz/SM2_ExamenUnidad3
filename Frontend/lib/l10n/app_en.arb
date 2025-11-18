@@ -17,6 +17,7 @@
   "reading": "Reading",
   "readingPracticeSubtitle": "Practice the words",
   "interview": "Interview",
+  "chooseYourPreferredTopic": "Choose your preferred topic",
   "home": "Home",
   "documents": "Documents",
   "book": "Book",
@@ -336,5 +337,101 @@
     }
   },
   "reviewTime": "Use this time to review what you've learned!",
-  "iUnderstand": "I Understand"
+  "iUnderstand": "I Understand",
+
+  "interviewTopicsTitle": "Interview Topics",
+  "loadingInterviewTopics": "Loading interview topics...",
+  "noTopicsAvailable": "No topics available",
+  "startInterviewTitle": "Start {topicName} Interview?",
+  "@startInterviewTitle": {
+    "placeholders": {
+      "topicName": {
+        "type": "String",
+        "example": "JavaScript"
+      }
+    }
+  },
+  "questions": "Questions",
+  "duration": "Duration",
+  "difficulty": "Difficulty",
+  "questionsCount": "{count} questions",
+  "@questionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "interviewDash": "Interview - {topicName}",
+  "@interviewDash": {
+    "placeholders": {
+      "topicName": {
+        "type": "String",
+        "example": "JavaScript"
+      }
+    }
+  },
+  "voiceRecordingComingSoon": "Voice Recording - Coming Soon",
+  "holdToRecord": "Hold to record",
+  "releaseToSend": "Release to send",
+  "recording": "Recording...",
+  "getResults": "Get Results",
+  "sendingAudio": "Sending audio...",
+  "recordedSeconds": "Recorded: {seconds}s",
+  "@recordedSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "nextQuestion": "Next Question",
+  "reRecord": "Record Again",
+  "yourAnswer": "Your Answer",
+  "typeYourAnswerHere": "Type your answer here...",
+  "minimumCharacters": "Minimum {count} characters",
+  "@minimumCharacters": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "80"
+      }
+    }
+  },
+  "pleaseEnterAnswer": "Please enter an answer",
+  "submitAnswer": "Submit Answer",
+  "answerEvaluation": "Answer Evaluation",
+  "scoreBreakdown": "Score Breakdown",
+  "viewFinalResults": "View Final Results",
+  "interviewComplete": "Interview Complete",
+  "keepPracticing": "Keep Practicing!",
+  "overallScore": "Overall Score: {score}/100",
+  "@overallScore": {
+    "placeholders": {
+      "score": {
+        "type": "String",
+        "example": "85.5"
+      }
+    }
+  },
+  "backToTopics": "Back to Topics",
+  "fluency": "Fluency",
+  "grammar": "Grammar",
+  "vocabulary_skill": "Vocabulary",
+  "pronunciation": "Pronunciation",
+  "coherence": "Coherence",
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "advanced": "Advanced"
 }

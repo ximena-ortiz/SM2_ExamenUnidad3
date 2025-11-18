@@ -40,10 +40,10 @@ class ReadingChaptersProvider with ChangeNotifier {
 
   /// Fetch reading chapters from backend
   Future<void> fetchChapters() async {
-    print('📖 ReadingChaptersProvider: Starting fetchChapters');
+    debugPrint('📖 ReadingChaptersProvider: Starting fetchChapters');
 
     if (!_authProvider.isAuthenticated || _authProvider.token == null) {
-      print('📖 ReadingChaptersProvider: User not authenticated');
+      debugPrint('📖 ReadingChaptersProvider: User not authenticated');
       _state = ReadingChaptersState.error;
       _errorMessage = 'User not authenticated';
       notifyListeners();
@@ -56,7 +56,7 @@ class ReadingChaptersProvider with ChangeNotifier {
 
     try {
       final url = '${EnvironmentConfig.fullApiUrl}/reading/chapters';
-      print('📖 ReadingChaptersProvider: Fetching from $url');
+      debugPrint('📖 ReadingChaptersProvider: Fetching from $url');
 
       final response = await http.get(
         Uri.parse(url),
@@ -67,7 +67,7 @@ class ReadingChaptersProvider with ChangeNotifier {
         },
       );
 
-      print('📖 ReadingChaptersProvider: Response status ${response.statusCode}');
+      debugPrint('📖 ReadingChaptersProvider: Response status ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -79,7 +79,7 @@ class ReadingChaptersProvider with ChangeNotifier {
         _completedChapters = chaptersResponse.completedChapters;
         _overallProgress = chaptersResponse.overallProgress;
 
-        print('📖 ReadingChaptersProvider: Loaded ${_chapters.length} chapters');
+        debugPrint('📖 ReadingChaptersProvider: Loaded ${_chapters.length} chapters');
 
         _state = ReadingChaptersState.loaded;
         _errorMessage = null;
@@ -87,12 +87,12 @@ class ReadingChaptersProvider with ChangeNotifier {
         _state = ReadingChaptersState.error;
         _errorMessage = 'Session expired. Please login again.';
       } else {
-        print('📖 ReadingChaptersProvider: Error ${response.statusCode}');
+        debugPrint('📖 ReadingChaptersProvider: Error ${response.statusCode}');
         _state = ReadingChaptersState.error;
         _errorMessage = 'Failed to load chapters: ${response.statusCode}';
       }
     } catch (e) {
-      print('📖 ReadingChaptersProvider: Exception $e');
+      debugPrint('📖 ReadingChaptersProvider: Exception $e');
       _state = ReadingChaptersState.error;
       _errorMessage = 'Network error: $e';
     }

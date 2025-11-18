@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 /// Comprehensive QA Test Suite for Vocabulary Chapters System
 /// 
 /// This script validates the complete functionality of the progressive
@@ -23,8 +25,8 @@ class VocabularyChaptersQATests {
   
   /// Run all QA tests
   Future<void> runAllTests() async {
-    print('🧪 Starting Vocabulary Chapters QA Test Suite');
-    print('=' * 60);
+    debugPrint('🧪 Starting Vocabulary Chapters QA Test Suite');
+    debugPrint('=' * 60);
     
     try {
       // Setup: Create test user and authenticate
@@ -48,11 +50,11 @@ class VocabularyChaptersQATests {
       // Test 6: Security validation
       await _testSecurityValidation();
       
-      print('\n🎉 All QA tests completed successfully!');
-      print('=' * 60);
+      debugPrint('\n🎉 All QA tests completed successfully!');
+      debugPrint('=' * 60);
       
     } catch (e) {
-      print('\n❌ QA tests failed with error: $e');
+      debugPrint('\n❌ QA tests failed with error: $e');
       exit(1);
     } finally {
       // Cleanup: Remove test user
@@ -62,11 +64,11 @@ class VocabularyChaptersQATests {
   
   /// Setup test user and authentication
   Future<void> _setupTestUser() async {
-    print('\n📋 Setup: Creating test user and authenticating...');
+    debugPrint('\n📋 Setup: Creating test user and authenticating...');
     
     // Try to register test user (might already exist)
     try {
-      final registerResponse = await _makeHttpRequest(
+      await _makeHttpRequest(
         'POST', 
         '$baseUrl/auth/register',
         body: {
@@ -76,9 +78,9 @@ class VocabularyChaptersQATests {
           'confirmPassword': testPassword,
         },
       );
-      print('✅ Test user registered successfully');
+      debugPrint('✅ Test user registered successfully');
     } catch (e) {
-      print('ℹ️  Test user might already exist, continuing with login...');
+      debugPrint('ℹ️  Test user might already exist, continuing with login...');
     }
     
     // Login to get token
@@ -98,14 +100,14 @@ class VocabularyChaptersQATests {
       throw Exception('Failed to authenticate test user');
     }
     
-    print('✅ Test user authenticated successfully');
-    print('   Token: ${authToken!.substring(0, 20)}...');
-    print('   User ID: $userId');
+    debugPrint('✅ Test user authenticated successfully');
+    debugPrint('   Token: ${authToken!.substring(0, 20)}...');
+    debugPrint('   User ID: $userId');
   }
   
   /// Test 1: Validate initial state - only chapter 1 should be unlocked
   Future<void> _testInitialState() async {
-    print('\n🔬 Test 1: Validating initial state...');
+    debugPrint('\n🔬 Test 1: Validating initial state...');
     
     final response = await _makeHttpRequest(
       'GET',
@@ -149,16 +151,16 @@ class VocabularyChaptersQATests {
       throw Exception('Completed chapters cannot exceed unlocked chapters');
     }
     
-    print('✅ Initial state validation passed');
-    print('   - Chapter 1 is unlocked: ✅');
-    print('   - Total chapters: ${stats['totalChapters']}');
-    print('   - Unlocked chapters: ${stats['unlockedChapters']}');
-    print('   - Completed chapters: ${stats['completedChapters']}');
+    debugPrint('✅ Initial state validation passed');
+    debugPrint('   - Chapter 1 is unlocked: ✅');
+    debugPrint('   - Total chapters: ${stats['totalChapters']}');
+    debugPrint('   - Unlocked chapters: ${stats['unlockedChapters']}');
+    debugPrint('   - Completed chapters: ${stats['completedChapters']}');
   }
   
   /// Test 2: Progressive unlocking - complete chapter 1 to unlock chapter 2
   Future<void> _testProgressiveUnlocking() async {
-    print('\n🔄 Test 2: Testing progressive unlocking...');
+    debugPrint('\n🔄 Test 2: Testing progressive unlocking...');
     
     // First, get initial state
     final initialResponse = await _makeHttpRequest(
@@ -171,14 +173,14 @@ class VocabularyChaptersQATests {
     final chapter1 = initialChapters.firstWhere((c) => c['order'] == 1);
     final chapter2 = initialChapters.firstWhere((c) => c['order'] == 2);
     
-    print('   Initial state:');
-    print('   - Chapter 1 unlocked: ${chapter1['isUnlocked']}');
-    print('   - Chapter 1 completed: ${chapter1['isCompleted']}');
-    print('   - Chapter 2 unlocked: ${chapter2['isUnlocked']}');
+    debugPrint('   Initial state:');
+    debugPrint('   - Chapter 1 unlocked: ${chapter1['isUnlocked']}');
+    debugPrint('   - Chapter 1 completed: ${chapter1['isCompleted']}');
+    debugPrint('   - Chapter 2 unlocked: ${chapter2['isUnlocked']}');
     
     // Complete chapter 1 if not already completed
     if (!chapter1['isCompleted']) {
-      print('   Completing chapter 1...');
+      debugPrint('   Completing chapter 1...');
       
       final completeResponse = await _makeHttpRequest(
         'POST',
@@ -200,10 +202,10 @@ class VocabularyChaptersQATests {
         throw Exception('Chapter should be marked as completed');
       }
       
-      print('✅ Chapter 1 completed successfully');
-      print('   - Next chapter unlocked: ${completionData['nextChapterUnlocked']}');
+      debugPrint('✅ Chapter 1 completed successfully');
+      debugPrint('   - Next chapter unlocked: ${completionData['nextChapterUnlocked']}');
     } else {
-      print('   Chapter 1 already completed, skipping completion test');
+      debugPrint('   Chapter 1 already completed, skipping completion test');
     }
     
     // Verify final state
@@ -226,15 +228,15 @@ class VocabularyChaptersQATests {
       throw Exception('Chapter 2 should be unlocked after completing chapter 1');
     }
     
-    print('✅ Progressive unlocking validation passed');
-    print('   Final state:');
-    print('   - Chapter 1 completed: ${finalChapter1['isCompleted']}');
-    print('   - Chapter 2 unlocked: ${finalChapter2['isUnlocked']}');
+    debugPrint('✅ Progressive unlocking validation passed');
+    debugPrint('   Final state:');
+    debugPrint('   - Chapter 1 completed: ${finalChapter1['isCompleted']}');
+    debugPrint('   - Chapter 2 unlocked: ${finalChapter2['isUnlocked']}');
   }
   
   /// Test 3: Edge cases validation
   Future<void> _testEdgeCases() async {
-    print('\n🔍 Test 3: Testing edge cases...');
+    debugPrint('\n🔍 Test 3: Testing edge cases...');
     
     // Get current chapters state
     final response = await _makeHttpRequest(
@@ -249,7 +251,7 @@ class VocabularyChaptersQATests {
     final lockedChapter = chapters.where((c) => !c['isUnlocked']).firstOrNull;
     
     if (lockedChapter != null) {
-      print('   Testing access to locked chapter ${lockedChapter['order']}...');
+      debugPrint('   Testing access to locked chapter ${lockedChapter['order']}...');
       
       // Try to complete a locked chapter (should fail)
       try {
@@ -265,12 +267,12 @@ class VocabularyChaptersQATests {
         if (e.toString().contains('Should not be able to complete')) {
           rethrow;
         }
-        print('✅ Correctly blocked access to locked chapter');
+        debugPrint('✅ Correctly blocked access to locked chapter');
       }
     }
     
     // Test invalid chapter ID
-    print('   Testing invalid chapter ID...');
+    debugPrint('   Testing invalid chapter ID...');
     try {
       await _makeHttpRequest(
         'POST',
@@ -284,11 +286,11 @@ class VocabularyChaptersQATests {
       if (e.toString().contains('Should not accept invalid')) {
         rethrow;
       }
-      print('✅ Correctly rejected invalid chapter ID');
+      debugPrint('✅ Correctly rejected invalid chapter ID');
     }
     
     // Test unauthorized access
-    print('   Testing unauthorized access...');
+    debugPrint('   Testing unauthorized access...');
     try {
       await _makeHttpRequest(
         'GET',
@@ -300,15 +302,15 @@ class VocabularyChaptersQATests {
       if (e.toString().contains('Should require authorization')) {
         rethrow;
       }
-      print('✅ Correctly requires authorization');
+      debugPrint('✅ Correctly requires authorization');
     }
     
-    print('✅ Edge cases validation passed');
+    debugPrint('✅ Edge cases validation passed');
   }
   
   /// Test 4: Frontend/Backend synchronization
   Future<void> _testFrontendBackendSync() async {
-    print('\n🔄 Test 4: Testing Frontend/Backend synchronization...');
+    debugPrint('\n🔄 Test 4: Testing Frontend/Backend synchronization...');
     
     // Make multiple rapid requests to test consistency
     List<Future> requests = [];
@@ -335,13 +337,13 @@ class VocabularyChaptersQATests {
       }
     }
     
-    print('✅ Frontend/Backend synchronization validation passed');
-    print('   - All ${responses.length} concurrent requests returned consistent data');
+    debugPrint('✅ Frontend/Backend synchronization validation passed');
+    debugPrint('   - All ${responses.length} concurrent requests returned consistent data');
   }
   
   /// Test 5: Lives system integration
   Future<void> _testLivesIntegration() async {
-    print('\n❤️  Test 5: Testing Lives system integration...');
+    debugPrint('\n❤️  Test 5: Testing Lives system integration...');
     
     // Get lives status
     final livesResponse = await _makeHttpRequest(
@@ -350,9 +352,9 @@ class VocabularyChaptersQATests {
       headers: {'Authorization': 'Bearer $authToken'},
     );
     
-    print('   Current lives status:');
-    print('   - Lives available: ${livesResponse['data']['currentLives']}');
-    print('   - Has lives: ${livesResponse['data']['hasLivesAvailable']}');
+    debugPrint('   Current lives status:');
+    debugPrint('   - Lives available: ${livesResponse['data']['currentLives']}');
+    debugPrint('   - Has lives: ${livesResponse['data']['hasLivesAvailable']}');
     
     // Test that chapters endpoint works regardless of lives status
     final chaptersResponse = await _makeHttpRequest(
@@ -365,16 +367,16 @@ class VocabularyChaptersQATests {
       throw Exception('Chapters endpoint should work regardless of lives status');
     }
     
-    print('✅ Lives system integration validation passed');
-    print('   - Chapters can be viewed regardless of lives status');
+    debugPrint('✅ Lives system integration validation passed');
+    debugPrint('   - Chapters can be viewed regardless of lives status');
   }
   
   /// Test 6: Security validation
   Future<void> _testSecurityValidation() async {
-    print('\n🔒 Test 6: Testing security validation...');
+    debugPrint('\n🔒 Test 6: Testing security validation...');
     
     // Test rate limiting (if implemented)
-    print('   Testing rate limiting...');
+    debugPrint('   Testing rate limiting...');
     List<Future> rapidRequests = [];
     
     for (int i = 0; i < 10; i++) {
@@ -387,13 +389,13 @@ class VocabularyChaptersQATests {
     
     try {
       await Future.wait(rapidRequests);
-      print('✅ All rapid requests succeeded (rate limiting may not be strict)');
+      debugPrint('✅ All rapid requests succeeded (rate limiting may not be strict)');
     } catch (e) {
-      print('✅ Rate limiting is working (some requests were throttled)');
+      debugPrint('✅ Rate limiting is working (some requests were throttled)');
     }
     
     // Test malformed requests
-    print('   Testing malformed requests...');
+    debugPrint('   Testing malformed requests...');
     
     try {
       await _makeHttpRequest(
@@ -403,10 +405,10 @@ class VocabularyChaptersQATests {
         body: {'invalidField': 'should be rejected'},
       );
     } catch (e) {
-      print('✅ Malformed request properly handled');
+      debugPrint('✅ Malformed request properly handled');
     }
     
-    print('✅ Security validation passed');
+    debugPrint('✅ Security validation passed');
   }
   
   /// Validate chapters response structure
@@ -515,7 +517,7 @@ class VocabularyChaptersQATests {
   
   /// Cleanup test user
   Future<void> _cleanupTestUser() async {
-    print('\n🧹 Cleanup: Test user cleanup completed');
+    debugPrint('\n🧹 Cleanup: Test user cleanup completed');
     // Note: In a real scenario, you might want to delete the test user
     // For now, we'll just log the cleanup
   }

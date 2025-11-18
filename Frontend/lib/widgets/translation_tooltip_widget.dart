@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -264,18 +264,18 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
           borderRadius: BorderRadius.circular(widget.tooltipBorderRadius ?? 12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 18,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
           ),
         ),
         child: Column(
@@ -313,14 +313,14 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
           icon: Icon(
             Icons.close,
             size: 18,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
           onPressed: _hideTooltip,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
           style: IconButton.styleFrom(
             backgroundColor:
-                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           ),
@@ -353,7 +353,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .withValues(alpha: 0.7),
                   ),
             ),
           ],
@@ -368,10 +368,10 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
           color: Theme.of(context)
               .colorScheme
               .errorContainer
-              .withOpacity(0.12),
+              .withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: Theme.of(context).colorScheme.error.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
@@ -404,7 +404,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
                   color: Theme.of(context)
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.6),
+                      .withValues(alpha: 0.6),
                 ),
           ),
         ),
@@ -420,7 +420,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color:
-                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -460,7 +460,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
               color: Theme.of(context)
                   .colorScheme
                   .secondaryContainer
-                  .withOpacity(0.3),
+                  .withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
@@ -483,11 +483,11 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
               color: Theme.of(context)
                   .colorScheme
                   .tertiaryContainer
-                  .withOpacity(0.2),
+                  .withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color:
-                    Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
+                    Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -540,7 +540,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
           backgroundColor: Theme.of(context)
               .colorScheme
               .primaryContainer
-              .withOpacity(0.5),
+              .withValues(alpha: 0.5),
           foregroundColor:
               Theme.of(context).colorScheme.onPrimaryContainer,
           padding: const EdgeInsets.all(8),
@@ -568,7 +568,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
         border: Border(
           top: BorderSide(
             color:
-                Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -628,7 +628,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
                   Theme.of(context)
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.7),
+                      .withValues(alpha: 0.7),
             ),
             const SizedBox(height: 4),
             Text(
@@ -638,7 +638,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
                         Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                   ),
             ),
           ],
@@ -822,7 +822,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -839,7 +839,7 @@ class _TranslationTooltipWidgetState extends State<TranslationTooltipWidget>
                   color: Theme.of(context)
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.3),
+                      .withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -992,3 +992,4 @@ class TranslatableText extends StatelessWidget {
     );
   }
 }
+

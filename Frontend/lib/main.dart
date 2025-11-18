@@ -15,6 +15,7 @@ import 'providers/vocabulary_chapters_provider.dart';
 import 'providers/vocabulary_practice_provider.dart';
 import 'providers/reading_chapters_provider.dart';
 import 'providers/reading_content_provider.dart';
+import 'providers/interview_provider.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -22,7 +23,10 @@ import 'screens/loading_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'utils/environment_config.dart';
 
-void main() {
+Future<void> main() async {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Log environment configuration in development mode
   EnvironmentConfig.logConfiguration();
 
@@ -83,6 +87,14 @@ class EnglishApp extends StatelessWidget {
           ),
           update: (context, auth, previous) =>
               previous ?? ReadingContentProvider(auth),
+        ),
+        ChangeNotifierProxyProvider2<AuthProvider, ProgressProvider, InterviewProvider>(
+          create: (context) => InterviewProvider(
+            Provider.of<AuthProvider>(context, listen: false),
+            Provider.of<ProgressProvider>(context, listen: false),
+          ),
+          update: (context, auth, progress, previous) =>
+              previous ?? InterviewProvider(auth, progress),
         ),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(

@@ -45,7 +45,6 @@ void main() {
     group('Critical Chapters 4 & 5 Tests', () {
       test('should validate Chapter 4 requires 100% threshold', () {
         // Arrange
-        const chapterId = '4';
         const expectedThreshold = 100;
         const score99 = 99;
         const score100 = 100;
@@ -59,7 +58,6 @@ void main() {
 
       test('should validate Chapter 5 requires 100% threshold', () {
         // Arrange
-        const chapterId = '5';
         const expectedThreshold = 100;
         const score99 = 99;
         const score100 = 100;
@@ -130,7 +128,6 @@ void main() {
         const attempt1Threshold = 80;
         const attempt1Deficit = 10; // 80 - 70
         
-        const attempt2Score = 85;
         const attempt2AdjustedScore = 75; // 85 - 10 (from previous attempt)
         
         // Act & Assert

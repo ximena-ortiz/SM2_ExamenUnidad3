@@ -62,6 +62,7 @@ class ApprovalService {
     required int errors,
     required int timeSpent,
     String? token,
+    Map<String, dynamic>? metadata,
   }) async {
     final body = {
       'userId': userId,
@@ -70,6 +71,11 @@ class ApprovalService {
       'errors': errors,
       'timeSpent': timeSpent,
     };
+    
+    // Add metadata if available
+    if (metadata != null && metadata.isNotEmpty) {
+      body['metadata'] = metadata;
+    }
     
     return await _apiService.post(
       '$_baseEndpoint/evaluate',

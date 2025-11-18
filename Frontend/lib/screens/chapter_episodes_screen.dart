@@ -250,11 +250,11 @@ class _ChapterEpisodesScreenState extends State<ChapterEpisodesScreen>
       currentScore: currentScore,
       onConfirm: () {
         // Analytics or logging could go here
-        print('User confirmed chapter repetition: ${chapter.title}');
+        debugPrint('User confirmed chapter repetition: ${chapter.title}');
       },
       onCancel: () {
         // Analytics or logging could go here
-        print('User cancelled chapter repetition: ${chapter.title}');
+        debugPrint('User cancelled chapter repetition: ${chapter.title}');
       },
     );
 

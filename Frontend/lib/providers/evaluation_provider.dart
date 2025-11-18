@@ -123,7 +123,7 @@ class EvaluationProvider with ChangeNotifier {
         _setState(EvaluationState.loaded);
         _clearError();
       } else {
-        _setError(response.message ?? 'Error al cargar evaluaciones');
+        _setError(response.message);
       }
     } catch (e) {
       _setError('Error de conexión: $e');
@@ -161,7 +161,7 @@ class EvaluationProvider with ChangeNotifier {
         _setState(EvaluationState.evaluated);
         _clearError();
       } else {
-        _setError(response.message ?? 'Error al evaluar capítulo');
+        _setError(response.message);
       }
     } catch (e) {
       // Save for offline retry
@@ -201,7 +201,7 @@ class EvaluationProvider with ChangeNotifier {
         _setState(EvaluationState.loaded);
         _clearError();
       } else {
-        _setError(response.message ?? 'Error al cargar historial');
+        _setError(response.message);
       }
     } catch (e) {
       _setError('Error de conexión: $e');
@@ -238,20 +238,6 @@ class EvaluationProvider with ChangeNotifier {
     }
   }
   
-  Future<void> _loadPendingEvaluations() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final pendingData = prefs.getString(_pendingEvaluationsKey);
-      
-      if (pendingData != null) {
-        final List<dynamic> jsonList = json.decode(pendingData);
-        _pendingEvaluations.clear();
-        _pendingEvaluations.addAll(jsonList.cast<Map<String, dynamic>>());
-      }
-    } catch (e) {
-      debugPrint('Error loading pending evaluations: $e');
-    }
-  }
   
   Future<void> _processPendingEvaluations() async {
     if (_pendingEvaluations.isEmpty) return;

@@ -61,6 +61,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get interview => 'Entrevista';
 
   @override
+  String get chooseYourPreferredTopic => 'Elige tu tema preferido';
+
+  @override
   String get home => 'Inicio';
 
   @override
@@ -678,4 +681,132 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get iUnderstand => 'Entendido';
+
+  @override
+  String get interviewTopicsTitle => 'Temas de Entrevista';
+
+  @override
+  String get loadingInterviewTopics => 'Cargando temas de entrevista...';
+
+  @override
+  String get noTopicsAvailable => 'No hay temas disponibles';
+
+  @override
+  String startInterviewTitle(String topicName) {
+    return '¿Iniciar Entrevista de $topicName?';
+  }
+
+  @override
+  String get questions => 'Preguntas';
+
+  @override
+  String get duration => 'Duración';
+
+  @override
+  String get difficulty => 'Dificultad';
+
+  @override
+  String questionsCount(int count) {
+    return '$count preguntas';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String interviewDash(String topicName) {
+    return 'Entrevista - $topicName';
+  }
+
+  @override
+  String get voiceRecordingComingSoon => 'Grabación de Voz - Próximamente';
+
+  @override
+  String get holdToRecord => 'Mantén presionado para grabar';
+
+  @override
+  String get releaseToSend => 'Suelta para enviar';
+
+  @override
+  String get recording => 'Grabando...';
+
+  @override
+  String get getResults => 'Obtener Resultados';
+
+  @override
+  String get sendingAudio => 'Enviando audio...';
+
+  @override
+  String recordedSeconds(int seconds) {
+    return 'Grabado: ${seconds}s';
+  }
+
+  @override
+  String get reRecord => 'Grabar de Nuevo';
+
+  @override
+  String get yourAnswer => 'Tu Respuesta';
+
+  @override
+  String get typeYourAnswerHere => 'Escribe tu respuesta aquí...';
+
+  @override
+  String minimumCharacters(int count) {
+    return 'Mínimo $count caracteres';
+  }
+
+  @override
+  String get pleaseEnterAnswer => 'Por favor ingresa una respuesta';
+
+  @override
+  String get submitAnswer => 'Enviar Respuesta';
+
+  @override
+  String get answerEvaluation => 'Evaluación de la Respuesta';
+
+  @override
+  String get scoreBreakdown => 'Desglose de Puntuación';
+
+  @override
+  String get viewFinalResults => 'Ver Resultados Finales';
+
+  @override
+  String get interviewComplete => 'Entrevista Completada';
+
+  @override
+  String get keepPracticing => '¡Sigue Practicando!';
+
+  @override
+  String overallScore(String score) {
+    return 'Puntuación General: $score/100';
+  }
+
+  @override
+  String get backToTopics => 'Volver a Temas';
+
+  @override
+  String get fluency => 'Fluidez';
+
+  @override
+  String get grammar => 'Gramática';
+
+  @override
+  String get vocabulary_skill => 'Vocabulario';
+
+  @override
+  String get pronunciation => 'Pronunciación';
+
+  @override
+  String get coherence => 'Coherencia';
+
+  @override
+  String get beginner => 'Principiante';
+
+  @override
+  String get intermediate => 'Intermedio';
+
+  @override
+  String get advanced => 'Avanzado';
 }

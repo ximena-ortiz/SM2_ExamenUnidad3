@@ -29,7 +29,7 @@ class _VocabularyScreenContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.vocabulary),
+        title: Text(AppLocalizations.of(context)?.vocabulary ?? 'Vocabulary'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),

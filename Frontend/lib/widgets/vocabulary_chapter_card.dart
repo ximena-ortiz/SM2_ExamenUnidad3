@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../models/vocabulary_chapter.dart';
 import '../l10n/app_localizations.dart';
 
@@ -385,9 +385,9 @@ class _VocabularyChapterCardState extends State<VocabularyChapterCard>
       case VocabularyChapterLevel.basic:
         return Colors.green;
       case VocabularyChapterLevel.intermediate:
-        return Colors.orange;
+        return Colors.orange.shade600;
       case VocabularyChapterLevel.advanced:
-        return Colors.red;
+        return Colors.red.shade600;
     }
   }
 

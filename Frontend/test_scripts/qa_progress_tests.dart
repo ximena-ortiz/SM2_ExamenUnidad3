@@ -5,8 +5,10 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 void main() async {
-  print('🧪 Iniciando pruebas QA del sistema de progreso...\n');
+  debugPrint('🧪 Iniciando pruebas QA del sistema de progreso...\n');
 
   final qaTests = QAProgressTests();
   
@@ -31,7 +33,7 @@ void main() async {
   // QA-007: Prueba de integridad de datos
   await qaTests.testDataIntegrity();
   
-  print('\n✅ Todas las pruebas QA completadas');
+  debugPrint('\n✅ Todas las pruebas QA completadas');
 }
 
 class QAProgressTests {
@@ -44,7 +46,7 @@ class QAProgressTests {
   
   /// QA-001: Usuario cierra sesión → al volver debe reanudar exactamente donde se quedó
   Future<void> testSessionResumption() async {
-    print('📋 QA-001: Probando reanudación después de cierre de sesión');
+    debugPrint('📋 QA-001: Probando reanudación después de cierre de sesión');
     
     try {
       // Simular progreso inicial
@@ -63,36 +65,36 @@ class QAProgressTests {
       };
       
       // Guardar progreso
-      print('  • Guardando progreso inicial...');
+      debugPrint('  • Guardando progreso inicial...');
       await _makeRequest('POST', '/progress', progressData);
       
       // Simular obtener progreso después de reiniciar sesión
-      print('  • Simulando cierre y reapertura de sesión...');
+      debugPrint('  • Simulando cierre y reapertura de sesión...');
       await Future.delayed(Duration(milliseconds: 500));
       
       // Verificar que el progreso se mantiene
-      print('  • Verificando progreso guardado...');
+      debugPrint('  • Verificando progreso guardado...');
       final savedProgress = await _makeRequest('GET', '/progress/test-user-id');
       
       if (savedProgress != null) {
-        print('  ✅ Progreso recuperado exitosamente');
-        print('     - Capítulo: ${savedProgress['chapter_id']}');
-        print('     - Puntaje: ${savedProgress['score']}');
+        debugPrint('  ✅ Progreso recuperado exitosamente');
+        debugPrint('     - Capítulo: ${savedProgress['chapter_id']}');
+        debugPrint('     - Puntaje: ${savedProgress['score']}');
       }
       
     } catch (e) {
-      print('  ❌ Error en prueba de reanudación: $e');
+      debugPrint('  ❌ Error en prueba de reanudación: $e');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// QA-002: Usuario pierde conexión → al reconectar, debe haberse guardado el último estado
   Future<void> testConnectionLossRecovery() async {
-    print('📋 QA-002: Probando recuperación después de pérdida de conexión');
+    debugPrint('📋 QA-002: Probando recuperación después de pérdida de conexión');
     
     try {
-      print('  • Simulando pérdida de conexión...');
+      debugPrint('  • Simulando pérdida de conexión...');
       
       // Simular múltiples intentos de guardado durante pérdida de conexión
       final offlineProgressData = {
@@ -106,32 +108,32 @@ class QAProgressTests {
       };
       
       // Intentar guardar con conexión simulada perdida (esto debería fallar)
-      print('  • Intentando guardar durante desconexión...');
+      debugPrint('  • Intentando guardar durante desconexión...');
       
       // Simular reconexión
-      print('  • Simulando reconexión...');
+      debugPrint('  • Simulando reconexión...');
       await Future.delayed(Duration(milliseconds: 300));
       
       // Intentar guardar nuevamente
-      print('  • Reintentando guardado después de reconexión...');
+      debugPrint('  • Reintentando guardado después de reconexión...');
       await _makeRequest('POST', '/progress', offlineProgressData);
       
-      print('  ✅ Recuperación después de pérdida de conexión exitosa');
+      debugPrint('  ✅ Recuperación después de pérdida de conexión exitosa');
       
     } catch (e) {
-      print('  ⚠️  Error esperado durante desconexión: $e');
-      print('  ✅ Sistema maneja correctamente la pérdida de conexión');
+      debugPrint('  ⚠️  Error esperado durante desconexión: $e');
+      debugPrint('  ✅ Sistema maneja correctamente la pérdida de conexión');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// QA-003: Usuario abre varios módulos en paralelo → debe prevalecer el último guardado
   Future<void> testParallelModules() async {
-    print('📋 QA-003: Probando manejo de módulos paralelos');
+    debugPrint('📋 QA-003: Probando manejo de módulos paralelos');
     
     try {
-      print('  • Simulando actividad en múltiples módulos...');
+      debugPrint('  • Simulando actividad en múltiples módulos...');
       
       // Progreso simultáneo en vocabulario
       final vocabProgress = {
@@ -167,32 +169,32 @@ class QAProgressTests {
       };
       
       // Enviar requests en paralelo
-      print('  • Enviando progreso de vocabulario...');
+      debugPrint('  • Enviando progreso de vocabulario...');
       await _makeRequest('POST', '/progress', vocabProgress);
       
-      print('  • Enviando progreso de lectura...');
+      debugPrint('  • Enviando progreso de lectura...');
       await _makeRequest('POST', '/progress', readingProgress);
       
-      print('  • Enviando progreso de entrevistas (último)...');
+      debugPrint('  • Enviando progreso de entrevistas (último)...');
       await _makeRequest('POST', '/progress', interviewProgress);
       
-      print('  ✅ Múltiples módulos manejados correctamente');
-      print('     - El último guardado debe prevalecer en caso de conflicto');
+      debugPrint('  ✅ Múltiples módulos manejados correctamente');
+      debugPrint('     - El último guardado debe prevalecer en caso de conflicto');
       
     } catch (e) {
-      print('  ❌ Error en prueba de módulos paralelos: $e');
+      debugPrint('  ❌ Error en prueba de módulos paralelos: $e');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// QA-004: Si el BE devuelve error → no debe corromper datos anteriores (rollback)
   Future<void> testBackendErrorHandling() async {
-    print('📋 QA-004: Probando manejo de errores del backend');
+    debugPrint('📋 QA-004: Probando manejo de errores del backend');
     
     try {
       // Primero guardar un estado válido
-      print('  • Guardando estado válido inicial...');
+      debugPrint('  • Guardando estado válido inicial...');
       final validProgress = {
         'chapter_id': 'error-test-valid',
         'score': 88.0,
@@ -206,7 +208,7 @@ class QAProgressTests {
       await _makeRequest('POST', '/progress', validProgress);
       
       // Intentar enviar datos inválidos que deberían causar error
-      print('  • Intentando enviar datos inválidos...');
+      debugPrint('  • Intentando enviar datos inválidos...');
       final invalidProgress = {
         'chapter_id': '', // Capítulo vacío - debería fallar
         'score': 'invalid_score', // Tipo incorrecto
@@ -215,24 +217,24 @@ class QAProgressTests {
       
       try {
         await _makeRequest('POST', '/progress', invalidProgress);
-        print('  ❌ El sistema aceptó datos inválidos (problema)');
+        debugPrint('  ❌ El sistema aceptó datos inválidos (problema)');
       } catch (e) {
-        print('  ✅ Sistema rechazó correctamente datos inválidos');
+        debugPrint('  ✅ Sistema rechazó correctamente datos inválidos');
       }
       
       // Verificar que el estado anterior se mantiene
-      print('  • Verificando que datos anteriores no se corrompieron...');
+      debugPrint('  • Verificando que datos anteriores no se corrompieron...');
       await Future.delayed(Duration(milliseconds: 200));
       
-      print('  ✅ Manejo de errores del backend exitoso');
-      print('     - Datos inválidos rechazados');
-      print('     - Estado anterior preservado');
+      debugPrint('  ✅ Manejo de errores del backend exitoso');
+      debugPrint('     - Datos inválidos rechazados');
+      debugPrint('     - Estado anterior preservado');
       
     } catch (e) {
-      print('  ❌ Error en prueba de manejo de errores: $e');
+      debugPrint('  ❌ Error en prueba de manejo de errores: $e');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// Helper method para hacer requests HTTP
@@ -284,11 +286,11 @@ class QAProgressTests {
   
   /// QA-005: Casos edge y validaciones robustas
   Future<void> testEdgeCasesAndValidations() async {
-    print('📋 QA-005: Probando casos edge y validaciones robustas');
+    debugPrint('📋 QA-005: Probando casos edge y validaciones robustas');
     
     try {
       // Caso 1: Datos con caracteres especiales
-      print('  • Probando datos con caracteres especiales...');
+      debugPrint('  • Probando datos con caracteres especiales...');
       final specialCharsData = {
         'chapter_id': 'test-special-chars-áéíóú-ñ-🎯',
         'score': 87.5,
@@ -302,10 +304,10 @@ class QAProgressTests {
       };
       
       await _makeRequest('POST', '/progress', specialCharsData);
-      print('    ✅ Caracteres especiales manejados correctamente');
+      debugPrint('    ✅ Caracteres especiales manejados correctamente');
       
       // Caso 2: Datos muy grandes
-      print('  • Probando datos de gran tamaño...');
+      debugPrint('  • Probando datos de gran tamaño...');
       final largeData = {
         'chapter_id': 'test-large-data',
         'score': 95.0,
@@ -317,10 +319,10 @@ class QAProgressTests {
       };
       
       await _makeRequest('POST', '/progress', largeData);
-      print('    ✅ Datos de gran tamaño manejados correctamente');
+      debugPrint('    ✅ Datos de gran tamaño manejados correctamente');
       
       // Caso 3: Múltiples requests simultáneos
-      print('  • Probando requests simultáneos...');
+      debugPrint('  • Probando requests simultáneos...');
       final futures = <Future>[];
       for (int i = 0; i < 5; i++) {
         final concurrentData = {
@@ -336,10 +338,10 @@ class QAProgressTests {
       }
       
       await Future.wait(futures);
-      print('    ✅ Requests simultáneos manejados correctamente');
+      debugPrint('    ✅ Requests simultáneos manejados correctamente');
       
       // Caso 4: Datos con valores límite
-      print('  • Probando valores límite...');
+      debugPrint('  • Probando valores límite...');
       final boundaryData = {
         'chapter_id': 'boundary-test',
         'score': 100.0, // Valor máximo
@@ -352,21 +354,21 @@ class QAProgressTests {
       };
       
       await _makeRequest('POST', '/progress', boundaryData);
-      print('    ✅ Valores límite manejados correctamente');
+      debugPrint('    ✅ Valores límite manejados correctamente');
       
     } catch (e) {
-      print('  ⚠️  Error en casos edge (puede ser esperado): \$e');
+      debugPrint('  ⚠️  Error en casos edge (puede ser esperado): \$e');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// QA-006: Prueba de rendimiento de autosave
   Future<void> testAutosavePerformance() async {
-    print('📋 QA-006: Probando rendimiento de autosave');
+    debugPrint('📋 QA-006: Probando rendimiento de autosave');
     
     try {
-      print('  • Midiendo tiempo de respuesta...');
+      debugPrint('  • Midiendo tiempo de respuesta...');
       final stopwatch = Stopwatch()..start();
       
       // Simular múltiples operaciones de guardado rápidas
@@ -388,32 +390,32 @@ class QAProgressTests {
       final totalTime = stopwatch.elapsedMilliseconds;
       final avgTime = totalTime / 10;
       
-      print('    ✅ Rendimiento medido:');
-      print('       - Tiempo total: \${totalTime}ms');
-      print('       - Tiempo promedio por guardado: \${avgTime.toStringAsFixed(1)}ms');
+      debugPrint('    ✅ Rendimiento medido:');
+      debugPrint('       - Tiempo total: \${totalTime}ms');
+      debugPrint('       - Tiempo promedio por guardado: \${avgTime.toStringAsFixed(1)}ms');
       
       if (avgTime < 500) {
-        print('    ✅ Rendimiento excelente (<500ms por guardado)');
+        debugPrint('    ✅ Rendimiento excelente (<500ms por guardado)');
       } else if (avgTime < 1000) {
-        print('    ⚠️  Rendimiento aceptable (500-1000ms por guardado)');
+        debugPrint('    ⚠️  Rendimiento aceptable (500-1000ms por guardado)');
       } else {
-        print('    ❌ Rendimiento lento (>1000ms por guardado)');
+        debugPrint('    ❌ Rendimiento lento (>1000ms por guardado)');
       }
       
     } catch (e) {
-      print('  ❌ Error en prueba de rendimiento: \$e');
+      debugPrint('  ❌ Error en prueba de rendimiento: \$e');
     }
     
-    print('');
+    debugPrint('');
   }
   
   /// QA-007: Prueba de integridad de datos
   Future<void> testDataIntegrity() async {
-    print('📋 QA-007: Probando integridad de datos');
+    debugPrint('📋 QA-007: Probando integridad de datos');
     
     try {
       // Guardar datos de referencia
-      print('  • Guardando datos de referencia...');
+      debugPrint('  • Guardando datos de referencia...');
       final referenceData = {
         'chapter_id': 'integrity-test',
         'score': 92.5,
@@ -434,7 +436,7 @@ class QAProgressTests {
       await _makeRequest('POST', '/progress', referenceData);
       
       // Recuperar y verificar datos
-      print('  • Verificando integridad de datos recuperados...');
+      debugPrint('  • Verificando integridad de datos recuperados...');
       await Future.delayed(Duration(milliseconds: 500));
       
       final retrievedData = await _makeRequest('GET', '/progress/test-user-id');
@@ -446,17 +448,17 @@ class QAProgressTests {
         final hasExtraData = retrievedData['extra_data'] != null;
         
         if (hasCorrectScore && hasCorrectChapter && hasExtraData) {
-          print('    ✅ Data integrity verified');
-          print('       - Score: ${retrievedData['score']}');
-          print('       - Chapter: ${retrievedData['chapter_id']}');
-          print('       - Extra data preserved: $hasExtraData');
+          debugPrint('    ✅ Data integrity verified');
+          debugPrint('       - Score: ${retrievedData['score']}');
+          debugPrint('       - Chapter: ${retrievedData['chapter_id']}');
+          debugPrint('       - Extra data preserved: $hasExtraData');
         } else {
-          print('    ❌ Data integrity issues detected');
+          debugPrint('    ❌ Data integrity issues detected');
         }
       }
       
       // Verify temporal consistency
-      print('  • Verifying temporal consistency...');
+      debugPrint('  • Verifying temporal consistency...');
       final timestamp1 = DateTime.now();
       await _makeRequest('POST', '/progress', {
         'chapter_id': 'temporal-test-1',
@@ -473,13 +475,13 @@ class QAProgressTests {
         'extra_data': {'timestamp': timestamp2.toIso8601String()}
       });
       
-      print('    ✅ Temporal consistency verified');
+      debugPrint('    ✅ Temporal consistency verified');
       
     } catch (e) {
-      print('  ❌ Error in integrity test: $e');
+      debugPrint('  ❌ Error in integrity test: $e');
     }
     
-    print('');
+    debugPrint('');
   }
 
   void dispose() {

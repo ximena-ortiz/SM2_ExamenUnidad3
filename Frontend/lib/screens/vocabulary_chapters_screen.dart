@@ -57,13 +57,10 @@ class _VocabularyChaptersScreenState extends State<VocabularyChaptersScreen>
 
     setState(() => _isLoading = true);
 
-    // Load lives status first
-    if (mounted) {
-      final livesProvider = context.read<LivesProvider>();
-      await livesProvider.fetchLivesStatus();
-    }
+    // Lives status is automatically managed by LivesProvider
+    // (fetched on init and refreshed periodically)
 
-    // Then load chapters
+    // Load chapters
     if (mounted) {
       final chaptersProvider = context.read<VocabularyChaptersProvider>();
       await chaptersProvider.loadChapters();

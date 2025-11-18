@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/chapter_evaluation.dart' as chapter;
@@ -133,21 +133,21 @@ class _ChapterResultsScreenState extends State<ChapterResultsScreen> {
                           Icon(
                             Icons.error_outline,
                             size: 64,
-                            color: theme.colorScheme.error.withOpacity(0.7),
+                            color: theme.colorScheme.error.withValues(alpha: 0.7),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Error loading results',
                             style: theme.textTheme.headlineSmall?.copyWith(
                               color:
-                                  theme.colorScheme.onSurface.withOpacity(0.7),
+                                  theme.colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             approvalProvider.errorMessage!,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.error.withOpacity(0.8),
+                              color: theme.colorScheme.error.withValues(alpha: 0.8),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -172,7 +172,7 @@ class _ChapterResultsScreenState extends State<ChapterResultsScreen> {
                                     Icons.assessment_outlined,
                                     size: 64,
                                     color: theme.colorScheme.primary
-                                        .withOpacity(0.5),
+                                        .withValues(alpha: 0.5),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
@@ -180,7 +180,7 @@ class _ChapterResultsScreenState extends State<ChapterResultsScreen> {
                                     style: theme.textTheme.headlineSmall
                                         ?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.7),
+                                          .withValues(alpha: 0.7),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -189,7 +189,7 @@ class _ChapterResultsScreenState extends State<ChapterResultsScreen> {
                                     style: theme.textTheme.bodyLarge
                                         ?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.7),
+                                          .withValues(alpha: 0.7),
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -228,3 +228,4 @@ class _ChapterResultsScreenState extends State<ChapterResultsScreen> {
     );
   }
 }
+

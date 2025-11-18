@@ -9,14 +9,11 @@ import '../widgets/bottom_navigation.dart';
 import '../widgets/app_banner.dart';
 import '../l10n/app_localizations.dart';
 import 'settings_screen.dart';
-import 'quiz_screen.dart';
 import 'chapter_episodes_screen.dart';
 import 'chapter_results_screen.dart';
-import 'favorites_screen.dart';
 import 'vocabulary_chapters_screen.dart';
-import 'reading_screen.dart';
 import 'reading_chapters_screen.dart';
-import 'interview_screen.dart';
+import 'interview_topics_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,13 +38,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    // Fetch lives status on init
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        final livesProvider = Provider.of<LivesProvider>(context, listen: false);
-        livesProvider.fetchLivesStatus();
-      }
-    });
+    // Lives status is automatically fetched by LivesProvider on initialization
+    // and refreshed periodically, so no need to call it here
   }
 
   @override
@@ -109,6 +101,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         },
       ),
+      // FAB for testing - reset lives
+      floatingActionButton: Consumer<LivesProvider>(
+        builder: (context, livesProvider, _) {
+          final isResetting = livesProvider.isResetting;
+
+          return FloatingActionButton.extended(
+            onPressed: isResetting ? null : () async {
+              await livesProvider.resetLives();
+              if (mounted) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Lives reset to 5! (Testing only)'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            icon: isResetting
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.favorite),
+            label: Text(
+              isResetting
+                  ? 'Resetting...'
+                  : 'Reset Lives (${livesProvider.currentLives}/5)',
+            ),
+            backgroundColor: isResetting ? Colors.grey : Colors.red,
+            foregroundColor: Colors.white,
+            elevation: 8,
+            tooltip: 'Reset lives to 5 (Testing)',
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -133,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       case 2:
         return const ReadingChaptersScreen();
       case 3:
-        return const QuizScreen();
+        return const InterviewTopicsScreen();
       default:
         return _buildHomeContent();
     }
@@ -218,24 +252,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 8),
-                          
-                          // Interview Card
-                          CustomCard(
-                            title: AppLocalizations.of(context)!.databases,
-                            subtitle: AppLocalizations.of(context)!.continueText,
-                            description: AppLocalizations.of(context)!.interview,
-                            icon: CustomIcons.interviewIcon(),
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const InterviewScreen(),
-                              ),
-                            ),
-                          ),
-                          
-                          const SizedBox(height: 8),
-                          
+
                           // Chapter Results Card
                           CustomCard(
                             title: AppLocalizations.of(context)!.chapterResults,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/reading_provider.dart';
 import '../providers/progress_provider.dart';
@@ -141,7 +141,7 @@ class _ReadingScreenContentState extends State<_ReadingScreenContent> {
                   word.type.name,
                   style: const TextStyle(fontSize: 12),
                 ),
-                backgroundColor: word.type.color.withOpacity(0.2),
+                backgroundColor: word.type.color.withValues(alpha: 0.2),
               ),
             ],
           ),
@@ -207,7 +207,7 @@ class _ReadingScreenContentState extends State<_ReadingScreenContent> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.reading),
+        title: Text(AppLocalizations.of(context)?.reading ?? 'Reading'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
@@ -544,7 +544,7 @@ class _ReadingScreenContentState extends State<_ReadingScreenContent> {
                   color: Theme.of(context).colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -2),
                     ),

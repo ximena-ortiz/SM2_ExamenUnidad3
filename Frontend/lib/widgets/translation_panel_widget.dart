@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../models/translation.dart';
@@ -39,7 +39,6 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
 
   List<Translation> _relatedTranslations = [];
   bool _isLoadingRelated = false;
-  bool _isFavorite = false;
   String? _error;
 
   @override
@@ -59,10 +58,8 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
   }
 
   void _checkFavoriteStatus() {
-    final favoritesProvider =
-        Provider.of<FavoritesProvider>(context, listen: false);
+    Provider.of<FavoritesProvider>(context, listen: false);
     setState(() {
-      _isFavorite = favoritesProvider.isFavorite(widget.originalText);
     });
   }
 
@@ -152,7 +149,7 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
               ),
             ],
@@ -185,7 +182,7 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
         color: Theme.of(context)
             .colorScheme
             .surfaceContainerHighest
-            .withOpacity(0.3),
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: TabBar(
@@ -289,7 +286,7 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .withValues(alpha: 0.7),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -300,7 +297,7 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.7),
+                                  .withValues(alpha: 0.7),
                             ),
                   ),
                   const Spacer(),
@@ -726,3 +723,4 @@ class _TranslationPanelWidgetState extends State<TranslationPanelWidget>
     }
   }
 }
+

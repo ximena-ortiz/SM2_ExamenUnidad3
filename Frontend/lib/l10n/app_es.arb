@@ -17,6 +17,7 @@
   "reading": "Lectura",
   "readingPracticeSubtitle": "Practica las palabras",
   "interview": "Entrevista",
+  "chooseYourPreferredTopic": "Elige tu tema preferido",
   "home": "Inicio",
   "documents": "Documentos",
   "book": "Libro",
@@ -300,5 +301,83 @@
     }
   },
   "reviewTime": "¡Usa este tiempo para repasar lo que has aprendido!",
-  "iUnderstand": "Entendido"
+  "iUnderstand": "Entendido",
+
+  "interviewTopicsTitle": "Temas de Entrevista",
+  "loadingInterviewTopics": "Cargando temas de entrevista...",
+  "noTopicsAvailable": "No hay temas disponibles",
+  "startInterviewTitle": "¿Iniciar Entrevista de {topicName}?",
+  "@startInterviewTitle": {
+    "placeholders": {
+      "topicName": { "type": "String", "example": "JavaScript" }
+    }
+  },
+  "questions": "Preguntas",
+  "duration": "Duración",
+  "difficulty": "Dificultad",
+  "questionsCount": "{count} preguntas",
+  "@questionsCount": {
+    "placeholders": {
+      "count": { "type": "int", "example": "5" }
+    }
+  },
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int", "example": "8" }
+    }
+  },
+  "interviewDash": "Entrevista - {topicName}",
+  "@interviewDash": {
+    "placeholders": {
+      "topicName": { "type": "String", "example": "JavaScript" }
+    }
+  },
+  "voiceRecordingComingSoon": "Grabación de Voz - Próximamente",
+  "holdToRecord": "Mantén presionado para grabar",
+  "releaseToSend": "Suelta para enviar",
+  "recording": "Grabando...",
+  "getResults": "Obtener Resultados",
+  "sendingAudio": "Enviando audio...",
+  "recordedSeconds": "Grabado: {seconds}s",
+  "@recordedSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "nextQuestion": "Siguiente Pregunta",
+  "reRecord": "Grabar de Nuevo",
+  "yourAnswer": "Tu Respuesta",
+  "typeYourAnswerHere": "Escribe tu respuesta aquí...",
+  "minimumCharacters": "Mínimo {count} caracteres",
+  "@minimumCharacters": {
+    "placeholders": {
+      "count": { "type": "int", "example": "80" }
+    }
+  },
+  "pleaseEnterAnswer": "Por favor ingresa una respuesta",
+  "submitAnswer": "Enviar Respuesta",
+  "answerEvaluation": "Evaluación de la Respuesta",
+  "scoreBreakdown": "Desglose de Puntuación",
+  "viewFinalResults": "Ver Resultados Finales",
+  "interviewComplete": "Entrevista Completada",
+  "keepPracticing": "¡Sigue Practicando!",
+  "overallScore": "Puntuación General: {score}/100",
+  "@overallScore": {
+    "placeholders": {
+      "score": { "type": "String", "example": "85.5" }
+    }
+  },
+  "backToTopics": "Volver a Temas",
+  "fluency": "Fluidez",
+  "grammar": "Gramática",
+  "vocabulary_skill": "Vocabulario",
+  "pronunciation": "Pronunciación",
+  "coherence": "Coherencia",
+  "beginner": "Principiante",
+  "intermediate": "Intermedio",
+  "advanced": "Avanzado"
 }

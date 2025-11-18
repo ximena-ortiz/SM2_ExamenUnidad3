@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+
 import '../utils/api_service.dart';
 import '../utils/environment_config.dart';
 
@@ -6,21 +8,7 @@ abstract class BasePracticeService {
   final ApiService apiService = ApiService();
   
   String get baseEndpoint;
-  
-  // Common headers for practice requests
-  Map<String, String> _getHeaders(String? token) {
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
     
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
-    }
-    
-    return headers;
-  }
-  
   // Create a new practice session
   Future<ApiResponse> createPracticeSession(
     Map<String, dynamic> practiceData,
@@ -155,7 +143,7 @@ abstract class BasePracticeService {
         }
       } catch (e) {
         if (EnvironmentConfig.enableLogging) {
-          print('Error parsing response: $e');
+          debugPrint('Error parsing response: $e');
         }
       }
     }
@@ -187,7 +175,7 @@ abstract class BasePracticeService {
             .toList();
       } catch (e) {
         if (EnvironmentConfig.enableLogging) {
-          print('Error parsing list response: $e');
+          debugPrint('Error parsing list response: $e');
         }
       }
     }

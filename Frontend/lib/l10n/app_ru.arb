@@ -46,7 +46,12 @@
   "initializingExperience": "Инициализация вашего опыта обучения...",
   "or": "ИЛИ",
   "user": "Пользователь",
-  "livesRemaining": "5/5",
+  "livesRemaining": "{lives}/5",
+  "@livesRemaining": {
+    "placeholders": {
+      "lives": { "type": "int", "example": "3" }
+    }
+  },
   "chapterProgress": "Глава 4/5",
   "software": "Программное обеспечение",
   "databases": "Базы данных",

@@ -18,9 +18,10 @@ class AudioService {
 
   // Config TTS
   double _volume = 0.8;
-  double _rate = 0.5;
+  double _rate = 0.3;
   double _pitch = 1.0;
   String _currentLanguage = 'en-US';
+  Map<String, String>? _currentVoice;
 
   // Cache de idiomas y voces
   List<dynamic> _availableLanguages = [];
@@ -34,6 +35,7 @@ class AudioService {
   double get rate => _rate;
   double get pitch => _pitch;
   String get currentLanguage => _currentLanguage;
+  Map<String, String>? get currentVoice => _currentVoice;
   List<dynamic> get availableLanguages => _availableLanguages;
   List<dynamic> get availableVoices => _availableVoices;
 
@@ -64,9 +66,9 @@ class AudioService {
       await _loadAvailableVoices();
 
       _isInitialized = true;
-      if (kDebugMode) print('AudioService initialized successfully');
+      if (kDebugMode) debugPrint('AudioService initialized successfully');
     } catch (e) {
-      if (kDebugMode) print('Error initializing AudioService: $e');
+      if (kDebugMode) debugPrint('Error initializing AudioService: $e');
       throw Exception('Failed to initialize AudioService: $e');
     }
   }
@@ -77,6 +79,9 @@ class AudioService {
     await _flutterTts.setSpeechRate(_rate);
     await _flutterTts.setPitch(_pitch);
     await _flutterTts.setLanguage(_currentLanguage);
+
+    // Intentar configurar una voz masculina por defecto
+    await _setMaleVoiceIfAvailable();
 
     _flutterTts.setStartHandler(() {
       _isSpeaking = true;
@@ -92,7 +97,7 @@ class AudioService {
 
     _flutterTts.setErrorHandler((msg) {
       _isSpeaking = false;
-      if (kDebugMode) print('TTS Error: $msg');
+      if (kDebugMode) debugPrint('TTS Error: $msg');
     });
   }
 
@@ -100,7 +105,7 @@ class AudioService {
     try {
       _availableLanguages = await _flutterTts.getLanguages ?? [];
     } catch (e) {
-      if (kDebugMode) print('Error loading languages: $e');
+      if (kDebugMode) debugPrint('Error loading languages: $e');
       _availableLanguages = [];
     }
   }
@@ -108,10 +113,114 @@ class AudioService {
   Future<void> _loadAvailableVoices() async {
     try {
       _availableVoices = await _flutterTts.getVoices ?? [];
+      if (kDebugMode) {
+        debugPrint('📢 Available voices: ${_availableVoices.length}');
+        for (var voice in _availableVoices) {
+          debugPrint('  - ${voice['name']} (${voice['locale']})');
+        }
+      }
     } catch (e) {
-      if (kDebugMode) print('Error loading voices: $e');
+      if (kDebugMode) debugPrint('Error loading voices: $e');
       _availableVoices = [];
     }
+  }
+
+  /// Configurar voz masculina automáticamente
+  Future<void> _setMaleVoiceIfAvailable() async {
+    try {
+      if (_availableVoices.isEmpty) return;
+
+      // Nombres comunes de voces masculinas en diferentes plataformas
+      final maleVoicePatterns = [
+        // Android
+        'en-us-x-tpf-local',      // Android male voice
+        'en-us-x-tpd-local',      // Android male voice
+        'en-gb-x-gba-local',      // UK male voice
+        // iOS
+        'Aaron',                   // US English male
+        'Alex',                    // US English male
+        'Daniel',                  // UK English male
+        'Fred',                    // US English male
+        'Jorge',                   // Spanish male
+        'Juan',                    // Spanish male
+        // Otros patrones
+        'male',
+        'man',
+        'masculino',
+      ];
+
+      // Buscar una voz masculina para el idioma actual
+      for (var voice in _availableVoices) {
+        final voiceMap = voice as Map<String, dynamic>;
+        final name = voiceMap['name']?.toString().toLowerCase() ?? '';
+        final locale = voiceMap['locale']?.toString().toLowerCase() ?? '';
+
+        // Verificar si el locale coincide con el idioma actual
+        if (!locale.contains(_currentLanguage.toLowerCase().split('-').first)) {
+          continue;
+        }
+
+        // Verificar si el nombre contiene algún patrón masculino
+        for (var pattern in maleVoicePatterns) {
+          if (name.contains(pattern.toLowerCase())) {
+            await setVoice(voiceMap.map((key, value) => MapEntry(key.toString(), value.toString())));
+            if (kDebugMode) debugPrint('✅ Male voice set: ${voiceMap['name']}');
+            return;
+          }
+        }
+      }
+
+      if (kDebugMode) debugPrint('⚠️ No male voice found, using default');
+    } catch (e) {
+      if (kDebugMode) debugPrint('Error setting male voice: $e');
+    }
+  }
+
+  /// Configurar una voz específica
+  Future<bool> setVoice(Map<String, String> voice) async {
+    try {
+      if (!_isInitialized) await initialize();
+
+      await _flutterTts.setVoice(voice);
+      _currentVoice = voice;
+
+      if (kDebugMode) debugPrint('Voice set to: ${voice['name']}');
+      return true;
+    } catch (e) {
+      if (kDebugMode) debugPrint('Error setting voice: $e');
+      return false;
+    }
+  }
+
+  /// Obtener voces disponibles filtradas por idioma y género
+  List<Map<String, String>> getVoicesByLanguageAndGender({
+    String? language,
+    bool maleOnly = false,
+  }) {
+    final voices = <Map<String, String>>[];
+
+    for (var voice in _availableVoices) {
+      final voiceMap = voice as Map<String, dynamic>;
+      final locale = voiceMap['locale']?.toString().toLowerCase() ?? '';
+      final name = voiceMap['name']?.toString().toLowerCase() ?? '';
+
+      // Filtrar por idioma si se especifica
+      if (language != null && !locale.contains(language.toLowerCase())) {
+        continue;
+      }
+
+      // Filtrar por género si se especifica
+      if (maleOnly) {
+        final malePatterns = ['male', 'man', 'aaron', 'alex', 'daniel', 'fred', 'jorge', 'juan', 'tpf', 'tpd', 'gba'];
+        if (!malePatterns.any((pattern) => name.contains(pattern))) {
+          continue;
+        }
+      }
+
+      voices.add(voiceMap.map((key, value) => MapEntry(key.toString(), value.toString())));
+    }
+
+    return voices;
   }
 
   /// Hablar texto
@@ -119,7 +228,7 @@ class AudioService {
     try {
       if (!_isInitialized) await initialize();
       if (text.trim().isEmpty) {
-        if (kDebugMode) print('Cannot speak empty text');
+        if (kDebugMode) debugPrint('Cannot speak empty text');
         return false;
       }
 
@@ -130,10 +239,10 @@ class AudioService {
       }
 
       final result = await _flutterTts.speak(text);
-      if (kDebugMode) print('Speaking: "$text" in $_currentLanguage');
+      if (kDebugMode) debugPrint('Speaking: "$text" in $_currentLanguage');
       return result == 1;
     } catch (e) {
-      if (kDebugMode) print('Error speaking text: $e');
+      if (kDebugMode) debugPrint('Error speaking text: $e');
       return false;
     }
   }
@@ -143,7 +252,7 @@ class AudioService {
     try {
       if (!_isInitialized) await initialize();
       if (audioUrl.trim().isEmpty) {
-        if (kDebugMode) print('Cannot play empty audio URL');
+        if (kDebugMode) debugPrint('Cannot play empty audio URL');
         return false;
       }
 
@@ -155,10 +264,10 @@ class AudioService {
       _audioPlayer.onPlayerComplete.listen((_) => _isPlaying = false);
 
       await _audioPlayer.play(UrlSource(audioUrl));
-      if (kDebugMode) print('Playing audio from URL: $audioUrl');
+      if (kDebugMode) debugPrint('Playing audio from URL: $audioUrl');
       return true;
     } catch (e) {
-      if (kDebugMode) print('Error playing audio: $e');
+      if (kDebugMode) debugPrint('Error playing audio: $e');
       return false;
     }
   }
@@ -220,12 +329,12 @@ class AudioService {
       final result = await _flutterTts.setLanguage(supported);
       if (result == 1) {
         _currentLanguage = supported;
-        if (kDebugMode) print('Language set to: $supported');
+        if (kDebugMode) debugPrint('Language set to: $supported');
         return true;
       }
       return false;
     } catch (e) {
-      if (kDebugMode) print('Error setting language: $e');
+      if (kDebugMode) debugPrint('Error setting language: $e');
       return false;
     }
   }
@@ -293,7 +402,7 @@ class AudioService {
       final langs = await _flutterTts.getLanguages;
       return List<String>.from(langs ?? []);
     } catch (e) {
-      if (kDebugMode) print('Error getting available languages: $e');
+      if (kDebugMode) debugPrint('Error getting available languages: $e');
       return [];
     }
   }
@@ -307,6 +416,7 @@ class AudioService {
       'rate': _rate,
       'pitch': _pitch,
       'currentLanguage': _currentLanguage,
+      'currentVoice': _currentVoice,
       'availableLanguagesCount': _availableLanguages.length,
       'availableVoicesCount': _availableVoices.length,
     };
@@ -326,10 +436,10 @@ class AudioService {
       results['languageChange'] = await setLanguage('es-ES');
       await setLanguage('en-US'); // back
 
-      if (kDebugMode) print('Audio test results: $results');
+      if (kDebugMode) debugPrint('Audio test results: $results');
       return results;
     } catch (e) {
-      if (kDebugMode) print('Audio test failed: $e');
+      if (kDebugMode) debugPrint('Audio test failed: $e');
       results['error'] = false;
       return results;
     }
@@ -340,6 +450,6 @@ class AudioService {
     await stop();
     await _audioPlayer.dispose();
     _isInitialized = false;
-    if (kDebugMode) print('AudioService disposed');
+    if (kDebugMode) debugPrint('AudioService disposed');
   }
 }

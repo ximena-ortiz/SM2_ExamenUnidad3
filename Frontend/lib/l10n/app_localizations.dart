@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Interview'**
   String get interview;
 
+  /// No description provided for @chooseYourPreferredTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred topic'**
+  String get chooseYourPreferredTopic;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -1345,6 +1351,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I Understand'**
   String get iUnderstand;
+
+  /// No description provided for @interviewTopicsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Interview Topics'**
+  String get interviewTopicsTitle;
+
+  /// No description provided for @loadingInterviewTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading interview topics...'**
+  String get loadingInterviewTopics;
+
+  /// No description provided for @noTopicsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics available'**
+  String get noTopicsAvailable;
+
+  /// No description provided for @startInterviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start {topicName} Interview?'**
+  String startInterviewTitle(String topicName);
+
+  /// No description provided for @questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get questions;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @difficulty.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get difficulty;
+
+  /// No description provided for @questionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} questions'**
+  String questionsCount(int count);
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String durationMinutes(int minutes);
+
+  /// No description provided for @interviewDash.
+  ///
+  /// In en, this message translates to:
+  /// **'Interview - {topicName}'**
+  String interviewDash(String topicName);
+
+  /// No description provided for @voiceRecordingComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Recording - Coming Soon'**
+  String get voiceRecordingComingSoon;
+
+  /// No description provided for @holdToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to record'**
+  String get holdToRecord;
+
+  /// No description provided for @releaseToSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to send'**
+  String get releaseToSend;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get recording;
+
+  /// No description provided for @getResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Results'**
+  String get getResults;
+
+  /// No description provided for @sendingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending audio...'**
+  String get sendingAudio;
+
+  /// No description provided for @recordedSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded: {seconds}s'**
+  String recordedSeconds(int seconds);
+
+  /// No description provided for @reRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Again'**
+  String get reRecord;
+
+  /// No description provided for @yourAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Answer'**
+  String get yourAnswer;
+
+  /// No description provided for @typeYourAnswerHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your answer here...'**
+  String get typeYourAnswerHere;
+
+  /// No description provided for @minimumCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum {count} characters'**
+  String minimumCharacters(int count);
+
+  /// No description provided for @pleaseEnterAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an answer'**
+  String get pleaseEnterAnswer;
+
+  /// No description provided for @submitAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Answer'**
+  String get submitAnswer;
+
+  /// No description provided for @answerEvaluation.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer Evaluation'**
+  String get answerEvaluation;
+
+  /// No description provided for @scoreBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Score Breakdown'**
+  String get scoreBreakdown;
+
+  /// No description provided for @viewFinalResults.
+  ///
+  /// In en, this message translates to:
+  /// **'View Final Results'**
+  String get viewFinalResults;
+
+  /// No description provided for @interviewComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Interview Complete'**
+  String get interviewComplete;
+
+  /// No description provided for @keepPracticing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Practicing!'**
+  String get keepPracticing;
+
+  /// No description provided for @overallScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Score: {score}/100'**
+  String overallScore(String score);
+
+  /// No description provided for @backToTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Topics'**
+  String get backToTopics;
+
+  /// No description provided for @fluency.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluency'**
+  String get fluency;
+
+  /// No description provided for @grammar.
+  ///
+  /// In en, this message translates to:
+  /// **'Grammar'**
+  String get grammar;
+
+  /// No description provided for @vocabulary_skill.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocabulary'**
+  String get vocabulary_skill;
+
+  /// No description provided for @pronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation'**
+  String get pronunciation;
+
+  /// No description provided for @coherence.
+  ///
+  /// In en, this message translates to:
+  /// **'Coherence'**
+  String get coherence;
+
+  /// No description provided for @beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get beginner;
+
+  /// No description provided for @intermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get intermediate;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
 }
 
 class _AppLocalizationsDelegate
