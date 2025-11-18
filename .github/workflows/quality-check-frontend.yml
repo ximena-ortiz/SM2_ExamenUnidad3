@@ -1,4 +1,4 @@
-name: Frontend Flutter CI
+name: Frontend Flutter 
 
 on:
   push:
