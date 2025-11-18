@@ -43,6 +43,9 @@ export class QuizQuestionsResponseDto {
     totalQuestions: number;
   };
 
-  @ApiProperty({ description: 'Response message', example: 'Quiz questions retrieved successfully' })
+  @ApiProperty({
+    description: 'Response message',
+    example: 'Quiz questions retrieved successfully',
+  })
   message!: string;
 }

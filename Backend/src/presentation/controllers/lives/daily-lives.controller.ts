@@ -20,9 +20,11 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { EnhancedJwtGuard } from '../../../shared/guards/enhanced-jwt.guard';
 import { ConsumeLifeUseCase } from '../../../application/use-cases/daily-lives/consume-life.use-case';
 import { GetLivesStatusUseCase } from '../../../application/use-cases/daily-lives/get-lives-status.use-case';
+import { ResetLivesUseCase } from '../../../application/use-cases/daily-lives/reset-lives.use-case';
 import { ConsumeLifeResponseDto } from '../../../application/dtos/daily-lives/consume-life-response.dto';
 import { DailyLivesResponseDto } from '../../../application/dtos/daily-lives/daily-lives-response.dto';
 import { NoLivesErrorDto } from '../../../application/dtos/daily-lives/no-lives-error.dto';
+import { SkipCSRF } from '../../../shared/guards/csrf.guard';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -43,6 +45,7 @@ export class DailyLivesController {
   constructor(
     private readonly consumeLifeUseCase: ConsumeLifeUseCase,
     private readonly getLivesStatusUseCase: GetLivesStatusUseCase,
+    private readonly resetLivesUseCase: ResetLivesUseCase,
   ) {}
 
   @Get('status')
@@ -127,6 +130,41 @@ export class DailyLivesController {
       );
 
       this.logger.error(`Error consuming life: ${errorMessage}`);
+      throw error;
+    }
+  }
+
+  @Post('reset')
+  @SkipCSRF()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Reset user lives (TESTING ONLY)',
+    description:
+      'Resets the authenticated user lives to 5. This endpoint is for testing purposes only.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lives reset successfully',
+    type: DailyLivesResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing JWT token',
+  })
+  async resetLives(@Request() req: AuthenticatedRequest): Promise<DailyLivesResponseDto> {
+    this.logger.log(`Resetting lives for user: ${req.user.userId} (TESTING MODE)`);
+
+    try {
+      const result = await this.resetLivesUseCase.execute(req.user.userId);
+
+      this.logger.log(
+        `AUDIT: Lives reset successfully for user ${req.user.userId}. Lives now: ${result.currentLives}`,
+      );
+
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error resetting lives: ${errorMessage}`);
       throw error;
     }
   }

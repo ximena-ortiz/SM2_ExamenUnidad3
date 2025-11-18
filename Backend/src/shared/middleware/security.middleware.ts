@@ -136,9 +136,16 @@ export class SecurityMiddleware implements NestMiddleware {
     // Check Origin header
     if (originValidation.requireOriginHeader || origin) {
       if (!origin) {
-        this.logger.warn(
-          `Missing Origin header for ${method.toUpperCase()} request to ${req.path}`,
-        );
+        // Only log as warning for unsafe methods (POST, PUT, DELETE, PATCH)
+        if (!['get', 'head', 'options'].includes(method)) {
+          this.logger.warn(
+            `Missing Origin header for ${method.toUpperCase()} request to ${req.path}`,
+          );
+        }
+        // Don't block the request if it's a safe method and requireOriginHeader is false
+        if (['get', 'head', 'options'].includes(method) && !originValidation.requireOriginHeader) {
+          return true;
+        }
         res.status(403).json({
           error: 'Forbidden',
           message: 'Origin header is required',

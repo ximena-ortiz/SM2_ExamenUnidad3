@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { ReadingChapter } from './reading-chapter.entity';
 import { QuizQuestion } from './quiz-question.entity';
+import { ReadingQuiz } from './reading-quiz.entity';
 
 export interface HighlightedWord {
   word: string;
@@ -63,6 +64,11 @@ export class ReadingContent {
     cascade: true,
   })
   quizQuestions!: QuizQuestion[];
+
+  @OneToMany(() => ReadingQuiz, quiz => quiz.readingContent, {
+    cascade: true,
+  })
+  readingQuizzes!: ReadingQuiz[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   readonly createdAt!: Date;

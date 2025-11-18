@@ -9,13 +9,19 @@ import {
 } from '../../../domain/entities/approval-evaluation.entity';
 import { ApprovalRule } from '../../../domain/entities/approval-rule.entity';
 import { ApprovalMetrics } from '../../../domain/entities/approval-metrics.entity';
+export interface EvaluationError {
+  type: string;
+  description: string;
+}
 
 export interface EvaluateApprovalRequest {
   userId: string;
   chapterId: string;
   score: number;
+  errors?: EvaluationError[];  
   timeSpent?: number;
   additionalData?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface EvaluateApprovalResponse {
@@ -29,7 +35,9 @@ export interface EvaluateApprovalResponse {
   feedback: string;
   canRetry: boolean;
   maxAttempts: number;
+  errors?: EvaluationError[]; 
 }
+
 
 @Injectable()
 export class EvaluateApprovalUseCase {

@@ -103,6 +103,13 @@ export class ApprovalController {
       `Evaluating approval for user: ${evaluateDto.userId}, chapter: ${evaluateDto.chapterId}, score: ${evaluateDto.score}`,
     );
 
+    // Log metadata if present
+    if (evaluateDto.metadata) {
+      this.logger.log(
+        `Additional metadata for evaluation: ${JSON.stringify(evaluateDto.metadata)}`,
+      );
+    }
+
     // Audit logging
     this.logger.log(
       `AUDIT: User ${req.user.userId} (${req.user.email}) evaluating approval for user ${evaluateDto.userId} on chapter ${evaluateDto.chapterId}`,
@@ -110,6 +117,31 @@ export class ApprovalController {
 
     try {
       const result = await this.approvalEngineService.evaluateApproval(evaluateDto);
+
+      // If this is a quiz completion, update the user progress with the quiz data
+      if (
+        evaluateDto.metadata &&
+        typeof evaluateDto.metadata === 'object' &&
+        evaluateDto.metadata.quiz_data &&
+        typeof evaluateDto.metadata.quiz_data === 'object'
+      ) {
+        // Use type assertion to access properties safely
+        const quizData = evaluateDto.metadata.quiz_data as {
+          quiz_completed?: boolean;
+          final_score?: number;
+          total_questions?: number;
+          correct_answers?: number;
+          incorrect_answers?: number;
+        };
+
+        if (quizData.quiz_completed === true) {
+          this.logger.log(
+            `Quiz completed for user ${evaluateDto.userId}, chapter ${evaluateDto.chapterId} with score ${quizData.final_score}`,
+          );
+        }
+
+        // The score is already saved in the evaluation, no additional action needed here
+      }
 
       // Audit successful evaluation
       this.logger.log(

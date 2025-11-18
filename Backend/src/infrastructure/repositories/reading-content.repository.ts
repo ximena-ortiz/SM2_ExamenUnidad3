@@ -40,7 +40,10 @@ export class ReadingContentRepository {
     return await this.readingContentRepository.save(readingContent);
   }
 
-  async update(id: string, readingContentData: Partial<Omit<ReadingContent, 'readingChapter' | 'quizQuestions'>>): Promise<ReadingContent> {
+  async update(
+    id: string,
+    readingContentData: Partial<Omit<ReadingContent, 'readingChapter' | 'quizQuestions'>>,
+  ): Promise<ReadingContent> {
     await this.readingContentRepository.update(id, readingContentData as any);
     const updated = await this.findById(id);
 

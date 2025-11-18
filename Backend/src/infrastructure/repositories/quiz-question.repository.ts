@@ -43,7 +43,10 @@ export class QuizQuestionRepository {
     return await this.quizQuestionRepository.save(quizQuestion);
   }
 
-  async update(id: string, quizQuestionData: Partial<Omit<QuizQuestion, 'readingContent'>>): Promise<QuizQuestion> {
+  async update(
+    id: string,
+    quizQuestionData: Partial<Omit<QuizQuestion, 'readingContent'>>,
+  ): Promise<QuizQuestion> {
     await this.quizQuestionRepository.update(id, quizQuestionData as any);
     const updated = await this.findById(id);
 

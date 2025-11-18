@@ -98,7 +98,9 @@ export class CreateReadingTables1759000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "user_progress" DROP CONSTRAINT "FK_user_progress_reading_chapter"`);
+    await queryRunner.query(
+      `ALTER TABLE "user_progress" DROP CONSTRAINT "FK_user_progress_reading_chapter"`,
+    );
     await queryRunner.query(`DROP INDEX "IDX_user_progress_readingChapterId"`);
     await queryRunner.query(`ALTER TABLE "user_progress" DROP COLUMN "readingChapterId"`);
     await queryRunner.query(`ALTER TABLE "user_progress" ALTER COLUMN "chapterId" SET NOT NULL`);

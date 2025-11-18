@@ -11,6 +11,8 @@ import { UpdateRepetitionDto } from '../../../application/dtos/repetition/update
 import { RepetitionResponseDto } from '../../../application/dtos/repetition/repetition-response.dto';
 import { SessionType, RepetitionStatus } from '../../../domain/entities/chapter-repetition.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { EnhancedJwtGuard } from '../../../shared/guards/enhanced-jwt.guard';
 
 describe('ProgressController', () => {
   let controller: ProgressController;
@@ -55,72 +57,60 @@ describe('ProgressController', () => {
     improvementRate: 0,
     isActive: true,
   };
+beforeEach(async () => {
+  const mockCreateProgressUseCase = {
+    execute: jest.fn(),
+  };
 
-  beforeEach(async () => {
-    const mockCreateProgressUseCase = {
-      execute: jest.fn(),
-    };
+  const mockGetUserProgressUseCase = {
+    execute: jest.fn(),
+  };
 
-    const mockGetUserProgressUseCase = {
-      execute: jest.fn(),
-    };
+  const mockUpdateProgressUseCase = {
+    execute: jest.fn(),
+  };
 
-    const mockUpdateProgressUseCase = {
-      execute: jest.fn(),
-    };
+  const mockRepeatChapterUseCase = {
+    execute: jest.fn(),
+  };
 
-    const mockRepeatChapterUseCase = {
-      execute: jest.fn(),
-    };
+  const mockGetRepetitionsUseCase = {
+    execute: jest.fn(),
+    getRepetitionById: jest.fn(),
+    getRecentRepetitions: jest.fn(),
+  };
 
-    const mockGetRepetitionsUseCase = {
-      execute: jest.fn(),
-      getRepetitionById: jest.fn(),
-      getRecentRepetitions: jest.fn(),
-    };
+  const mockUpdateRepetitionUseCase = {
+    execute: jest.fn(),
+    completeRepetition: jest.fn(),
+    abandonRepetition: jest.fn(),
+  };
 
-    const mockUpdateRepetitionUseCase = {
-      execute: jest.fn(),
-      completeRepetition: jest.fn(),
-      abandonRepetition: jest.fn(),
-    };
+  const module: TestingModule = await Test.createTestingModule({
+    controllers: [ProgressController],
+    providers: [
+      { provide: CreateProgressUseCase, useValue: mockCreateProgressUseCase },
+      { provide: GetUserProgressUseCase, useValue: mockGetUserProgressUseCase },
+      { provide: UpdateProgressUseCase, useValue: mockUpdateProgressUseCase },
 
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [ProgressController],
-      providers: [
-        {
-          provide: CreateProgressUseCase,
-          useValue: mockCreateProgressUseCase,
-        },
-        {
-          provide: GetUserProgressUseCase,
-          useValue: mockGetUserProgressUseCase,
-        },
-        {
-          provide: UpdateProgressUseCase,
-          useValue: mockUpdateProgressUseCase,
-        },
-        {
-          provide: RepeatChapterUseCase,
-          useValue: mockRepeatChapterUseCase,
-        },
-        {
-          provide: GetRepetitionsUseCase,
-          useValue: mockGetRepetitionsUseCase,
-        },
-        {
-          provide: UpdateRepetitionUseCase,
-          useValue: mockUpdateRepetitionUseCase,
-        },
-      ],
-    }).compile();
+      { provide: RepeatChapterUseCase, useValue: mockRepeatChapterUseCase },
+      { provide: GetRepetitionsUseCase, useValue: mockGetRepetitionsUseCase },
+      { provide: UpdateRepetitionUseCase, useValue: mockUpdateRepetitionUseCase },
+    ],
+  })
+    .overrideGuard(ThrottlerGuard)
+    .useValue({ canActivate: jest.fn(() => true) })
+    .overrideGuard(EnhancedJwtGuard)
+    .useValue({ canActivate: jest.fn(() => true) })
+    .compile();
 
-    controller = module.get<ProgressController>(ProgressController);
+  controller = module.get<ProgressController>(ProgressController);
 
-    repeatChapterUseCase = module.get(RepeatChapterUseCase);
-    getRepetitionsUseCase = module.get(GetRepetitionsUseCase);
-    updateRepetitionUseCase = module.get(UpdateRepetitionUseCase);
-  });
+  repeatChapterUseCase = module.get(RepeatChapterUseCase);
+  getRepetitionsUseCase = module.get(GetRepetitionsUseCase);
+  updateRepetitionUseCase = module.get(UpdateRepetitionUseCase);
+});
+
 
   describe('startRepetition', () => {
     const createRepetitionDto: CreateRepetitionDto = {
@@ -174,7 +164,7 @@ describe('ProgressController', () => {
       // Assert
       expect(result).toBeDefined();
       expect(result).toEqual([mockRepetitionResponse]);
-      expect(getRepetitionsUseCase.execute).toHaveBeenCalledWith({ userId: 'user-1' });
+      expect(getRepetitionsUseCase.execute).toHaveBeenCalledWith('user-1');
     });
 
     it('should use default pagination values', async () => {
@@ -193,7 +183,7 @@ describe('ProgressController', () => {
       await controller.getUserRepetitions(mockRequest);
 
       // Assert
-      expect(getRepetitionsUseCase.execute).toHaveBeenCalledWith({ userId: 'user-1' });
+      expect(getRepetitionsUseCase.execute).toHaveBeenCalledWith('user-1');
     });
   });
 

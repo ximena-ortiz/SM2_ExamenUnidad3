@@ -54,6 +54,9 @@ export class ReadingContentResponseDto {
   @ApiProperty({ description: 'Reading content data', type: ReadingContentDto })
   data!: ReadingContentDto;
 
-  @ApiProperty({ description: 'Response message', example: 'Reading content retrieved successfully' })
+  @ApiProperty({
+    description: 'Response message',
+    example: 'Reading content retrieved successfully',
+  })
   message!: string;
 }

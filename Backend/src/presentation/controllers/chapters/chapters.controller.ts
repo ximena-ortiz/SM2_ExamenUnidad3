@@ -112,8 +112,7 @@ export class ChaptersController {
   })
   @ApiOperation({
     summary: 'Get vocabulary items for a chapter',
-    description:
-      'Retrieve paginated vocabulary items for a specific chapter',
+    description: 'Retrieve paginated vocabulary items for a specific chapter',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -144,11 +143,7 @@ export class ChaptersController {
         `Getting vocabulary items for chapter: ${chapterId} (page: ${page}, limit: ${limit})`,
       );
 
-      const result = await this.getVocabularyItemsUseCase.execute(
-        chapterId,
-        page,
-        limit,
-      );
+      const result = await this.getVocabularyItemsUseCase.execute(chapterId, page, limit);
 
       return {
         success: true,

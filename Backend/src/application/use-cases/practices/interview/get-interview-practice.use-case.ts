@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
 import { InterviewPractice } from '../../../../domain/entities/interview-practice.entity';
 import { IInterviewPracticeRepository } from '../../../interfaces/repositories/interview-practice-repository.interface';
 
 @Injectable()
 export class GetInterviewPracticeUseCase {
-  constructor(private readonly interviewPracticeRepository: IInterviewPracticeRepository) {}
+  constructor(
+    @Inject('IInterviewPracticeRepository')
+    private readonly interviewPracticeRepository: IInterviewPracticeRepository,
+  ) {}
 
   async execute(practiceId: string, userId: string): Promise<InterviewPractice> {
     const practice = await this.interviewPracticeRepository.findById(practiceId);

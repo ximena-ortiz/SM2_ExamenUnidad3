@@ -8,24 +8,24 @@ import { User } from '../../../domain/entities/user.entity';
 import { UserProgress } from '../../../domain/entities/user-progress.entity';
 import { ChapterRepetition } from '../../../domain/entities/chapter-repetition.entity';
 import { SessionType, RepetitionStatus } from '../../../domain/entities/chapter-repetition.entity';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+// import { ConflictException } from '@nestjs/common';
 describe('RepeatChapterUseCase', () => {
   let useCase: RepeatChapterUseCase;
   let userRepository: jest.Mocked<IUserRepository>;
   let userProgressRepository: jest.Mocked<IUserProgressRepository>;
   let chapterRepetitionRepository: jest.Mocked<IChapterRepetitionRepository>;
 
-  const mockUser: User = {
-    id: 'user-1',
-    email: 'test@example.com',
-    password: 'hashedpassword',
-    isActive: true,
-    role: 'STUDENT',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    refreshTokens: [],
-  };
+const mockUser = {
+  id: 'user-1',
+  email: 'test@example.com',
+  password: 'hashedpassword',
+  isActive: true,
+  role: 'STUDENT',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  refreshTokens: [],
+} as unknown as User;
 
   const mockProgress: UserProgress = {
     id: 'progress-1',
@@ -205,22 +205,20 @@ describe('RepeatChapterUseCase', () => {
       );
     });
 
-    it('should throw BadRequestException when there is an active repetition', async () => {
-      // Arrange
-      userRepository.findById.mockResolvedValue(mockUser);
-      userProgressRepository.findById.mockResolvedValue(mockProgress);
-      chapterRepetitionRepository.findActiveRepetition.mockResolvedValue(mockRepetition);
+it('should throw ConflictException when there is an active repetition', async () => {
+  userRepository.findById.mockResolvedValue(mockUser);
+  userProgressRepository.findById.mockResolvedValue(mockProgress);
+  chapterRepetitionRepository.findActiveRepetition.mockResolvedValue(mockRepetition);
 
-      // Act & Assert
-      await expect(useCase.execute('user-1', createRepetitionDto)).rejects.toThrow(
-        BadRequestException,
-      );
-      expect(chapterRepetitionRepository.findActiveRepetition).toHaveBeenCalledWith(
-        'user-1',
-        'chapter-1',
-      );
-    });
+  await expect(useCase.execute('user-1', createRepetitionDto)).rejects.toThrow(
+    ConflictException,
+  );
 
+  expect(chapterRepetitionRepository.findActiveRepetition).toHaveBeenCalledWith(
+    'user-1',
+    'chapter-1',
+  );
+});
     it('should throw BadRequestException when chapter IDs do not match', async () => {
       // Arrange
       const mismatchedDto = { ...createRepetitionDto, chapterId: 'different-chapter' };

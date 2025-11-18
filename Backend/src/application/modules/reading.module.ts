@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReadingChapter } from '../../domain/entities/reading-chapter.entity';
 import { ReadingContent } from '../../domain/entities/reading-content.entity';
 import { QuizQuestion } from '../../domain/entities/quiz-question.entity';
+import { ReadingQuiz } from '../../domain/entities/reading-quiz.entity';
 import { UserProgress } from '../../domain/entities/user-progress.entity';
 import { DailyLives } from '../../domain/entities/daily-lives.entity';
 
@@ -12,6 +13,7 @@ import { DailyLives } from '../../domain/entities/daily-lives.entity';
 import { ReadingChapterRepository } from '../../infrastructure/repositories/reading-chapter.repository';
 import { ReadingContentRepository } from '../../infrastructure/repositories/reading-content.repository';
 import { QuizQuestionRepository } from '../../infrastructure/repositories/quiz-question.repository';
+import { ReadingQuizRepository } from '../../infrastructure/repositories/reading-quiz.repository';
 import { DailyLivesRepository } from '../../infrastructure/repositories/daily-lives.repository';
 
 // Use Cases
@@ -27,6 +29,7 @@ import { CompleteReadingChapterUseCase } from '../use-cases/reading/complete-rea
       ReadingChapter,
       ReadingContent,
       QuizQuestion,
+      ReadingQuiz,
       UserProgress,
       DailyLives,
     ]),
@@ -36,6 +39,7 @@ import { CompleteReadingChapterUseCase } from '../use-cases/reading/complete-rea
     ReadingChapterRepository,
     ReadingContentRepository,
     QuizQuestionRepository,
+    ReadingQuizRepository,
     DailyLivesRepository,
     // Use Cases
     GetReadingChaptersStatusUseCase,
@@ -45,9 +49,12 @@ import { CompleteReadingChapterUseCase } from '../use-cases/reading/complete-rea
     CompleteReadingChapterUseCase,
   ],
   exports: [
+    // Repositories
     ReadingChapterRepository,
     ReadingContentRepository,
     QuizQuestionRepository,
+    ReadingQuizRepository,
+    // Use Cases
     GetReadingChaptersStatusUseCase,
     GetReadingContentUseCase,
     GetQuizQuestionsUseCase,

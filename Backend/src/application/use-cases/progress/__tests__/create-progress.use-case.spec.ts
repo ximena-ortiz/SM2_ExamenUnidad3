@@ -112,29 +112,31 @@ describe('CreateProgressUseCase', () => {
       isFirstChapter: jest.fn().mockReturnValue(true),
     };
 
-    const mockProgress = {
-      id: 'progress-789',
-      userId: mockUserId,
-      chapterId: mockChapterId,
-      score: 85.5,
-      lastActivity: new Date(),
-      chapterCompleted: false,
-      chapterCompletionDate: null,
-      vocabularyItemsLearned: 5,
-      totalVocabularyItems: 20,
-      extraData: { vocab: { chapter: 2, lastWord: 'apple' } },
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      // Relations
-      user: mockUser,
-      chapter: mockChapter,
-      // Business methods
-      getProgressPercentage: jest.fn().mockReturnValue(25),
-      markChapterCompleted: jest.fn(),
-      incrementVocabularyLearned: jest.fn(),
-      isChapterInProgress: jest.fn().mockReturnValue(true),
-      canCompleteChapter: jest.fn().mockReturnValue(false),
-    } as UserProgress;
+const mockProgress = {
+  id: 'progress-789',
+  userId: mockUserId,
+  chapterId: mockChapterId,
+  score: 85.5,
+  lastActivity: new Date(),
+  chapterCompleted: false,
+  chapterCompletionDate: null,
+  vocabularyItemsLearned: 5,
+  totalVocabularyItems: 20,
+  extraData: { vocab: { chapter: 2, lastWord: 'apple' } },
+  createdAt: new Date(),
+  updatedAt: new Date(),
+
+  // Relations
+  user: mockUser,
+  chapter: mockChapter,
+
+  // Métodos
+  getProgressPercentage: jest.fn().mockReturnValue(25),
+  markChapterCompleted: jest.fn(),
+  incrementVocabularyLearned: jest.fn(),
+  isChapterInProgress: jest.fn().mockReturnValue(true),
+  canCompleteChapter: jest.fn().mockReturnValue(false),
+} as unknown as UserProgress;
 
     it('should create progress successfully when user exists', async () => {
       mockUserRepository.findById.mockResolvedValue(mockUser);

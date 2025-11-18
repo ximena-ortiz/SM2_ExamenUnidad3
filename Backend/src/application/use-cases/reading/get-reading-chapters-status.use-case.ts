@@ -13,6 +13,7 @@ export class GetReadingChaptersStatusUseCase {
     totalChapters: number;
     unlockedChapters: number;
     completedChapters: number;
+    overallProgress: number;
   }> {
     this.logger.log(`Getting reading chapters status for user: ${userId}`);
 
@@ -30,16 +31,21 @@ export class GetReadingChaptersStatusUseCase {
       isUnlocked: item.isUnlocked,
       isCompleted: item.userProgress?.chapterCompleted || false,
       progressPercentage: item.progressPercentage,
-      estimatedReadingTime: item.chapter.metadata?.estimatedMinutes as number || null,
+      estimatedReadingTime: (item.chapter.metadata?.estimatedMinutes as number) || null,
       lastActivity: item.userProgress?.lastActivity || null,
       completionDate: item.userProgress?.chapterCompletionDate || null,
     }));
 
+    const totalChapters = chapters.length;
+    const completedChapters = chapters.filter(c => c.isCompleted).length;
+    const overallProgress = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0;
+
     return {
       chapters,
-      totalChapters: chapters.length,
+      totalChapters,
       unlockedChapters: chapters.filter(c => c.isUnlocked).length,
-      completedChapters: chapters.filter(c => c.isCompleted).length,
+      completedChapters,
+      overallProgress: Math.round(overallProgress * 100) / 100, // Round to 2 decimal places
     };
   }
 }

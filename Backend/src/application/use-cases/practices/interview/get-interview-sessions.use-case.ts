@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import {
   InterviewPractice,
   InterviewType,
@@ -9,7 +9,10 @@ import { GetInterviewSessionsDto } from '../../../dtos/interview-practice.dto';
 
 @Injectable()
 export class GetInterviewSessionsUseCase {
-  constructor(private readonly interviewPracticeRepository: IInterviewPracticeRepository) {}
+  constructor(
+    @Inject('IInterviewPracticeRepository')
+    private readonly interviewPracticeRepository: IInterviewPracticeRepository,
+  ) {}
 
   async execute(
     userId: string,

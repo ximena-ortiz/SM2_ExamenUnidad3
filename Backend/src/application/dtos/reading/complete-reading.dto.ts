@@ -1,15 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, IsNumber, Min, Max } from 'class-validator';
+import { IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
 
 export class CompleteReadingChapterDto {
-  @ApiProperty({
-    description: 'Reading chapter ID',
-    example: 'uuid-chapter-id',
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  readingChapterId!: string;
-
   @ApiProperty({
     description: 'Quiz score (0-100)',
     example: 80,
@@ -41,6 +33,9 @@ export class CompleteReadingChapterResponseDto {
     score: number;
   };
 
-  @ApiProperty({ description: 'Response message', example: 'Reading chapter completed successfully' })
+  @ApiProperty({
+    description: 'Response message',
+    example: 'Reading chapter completed successfully',
+  })
   message!: string;
 }

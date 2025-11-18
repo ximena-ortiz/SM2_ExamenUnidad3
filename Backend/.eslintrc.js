@@ -17,7 +17,7 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/prefer-readonly': 'error',
     '@typescript-eslint/prefer-readonly-parameter-types': 'off',
@@ -25,4 +25,12 @@ module.exports = {
     'prefer-const': 'error',
     'no-var': 'error',
   },
+   overrides: [
+    {
+      files: ['*.spec.ts', '*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 };

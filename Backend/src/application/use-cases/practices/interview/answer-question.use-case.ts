@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import {
   InterviewPractice,
@@ -16,7 +17,9 @@ import { AnswerQuestionDto } from '../../../dtos/interview-practice.dto';
 @Injectable()
 export class AnswerQuestionUseCase {
   constructor(
+    @Inject('IInterviewPracticeRepository')
     private readonly interviewPracticeRepository: IInterviewPracticeRepository,
+    @Inject('IPracticeSessionRepository')
     private readonly practiceSessionRepository: IPracticeSessionRepository,
   ) {}
 

@@ -4,6 +4,7 @@ import { VocabularySeeder } from './vocabulary-seeder';
 import { ReadingSeeder } from './reading-seeder';
 import { UserSeeder } from './user-seeder';
 import { LivesSeeder } from './lives-seeder';
+import { InterviewSeeder } from './interview-seeder';
 
 // Load environment variables
 config();
@@ -49,6 +50,11 @@ async function runSeeder() {
     const livesSeeder = new LivesSeeder(AppDataSource);
     await livesSeeder.run();
 
+    // 5. Interview Seeder
+    console.log('5️⃣  Running Interview Seeder...');
+    const interviewSeeder = new InterviewSeeder(AppDataSource);
+    await interviewSeeder.seed();
+
     console.log('\n' + '='.repeat(60));
     console.log('✨ SEEDING SUMMARY');
     console.log('='.repeat(60));
@@ -56,6 +62,7 @@ async function runSeeder() {
     console.log('✅ Reading chapters and content created');
     console.log('✅ Test user created (test@test.com / MySecurePassword)');
     console.log('✅ Daily lives assigned to test user');
+    console.log('✅ Interview topics and questions created');
     console.log('='.repeat(60) + '\n');
   } catch (error) {
     console.error('\n❌ Error during seeding:', error);

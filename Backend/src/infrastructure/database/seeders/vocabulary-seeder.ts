@@ -148,9 +148,7 @@ export class VocabularySeeder {
     ];
 
     console.log('📚 Creating chapters...');
-    const chapters = await chapterRepository.save(
-      chapterRepository.create(chaptersData),
-    );
+    const chapters = await chapterRepository.save(chapterRepository.create(chaptersData));
     console.log(`✅ Created ${chapters.length} chapters`);
 
     // Vocabulario por capítulo
@@ -397,14 +395,10 @@ export class VocabularySeeder {
           isActive: true,
         }));
 
-        await vocabularyRepository.save(
-          vocabularyRepository.create(vocabularyWithChapter),
-        );
+        await vocabularyRepository.save(vocabularyRepository.create(vocabularyWithChapter));
 
         totalVocabulary += vocabItems.length;
-        console.log(
-          `  ✅ Added ${vocabItems.length} vocabulary items to "${chapter.title}"`,
-        );
+        console.log(`  ✅ Added ${vocabItems.length} vocabulary items to "${chapter.title}"`);
       }
     }
 

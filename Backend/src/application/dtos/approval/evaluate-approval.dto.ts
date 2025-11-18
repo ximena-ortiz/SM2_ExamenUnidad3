@@ -55,6 +55,23 @@ export class EvaluateApprovalDto {
   @IsOptional()
   @IsObject({ message: 'Additional data must be an object' })
   readonly additionalData?: Record<string, unknown>;
+
+  @ApiProperty({
+    description: 'Metadata for the evaluation, including quiz data',
+    example: {
+      quiz_data: {
+        quiz_completed: true,
+        final_score: 85,
+        total_questions: 10,
+        correct_answers: 8,
+        incorrect_answers: 2,
+      },
+    },
+    required: false,
+  })
+  @IsOptional()
+  @IsObject({ message: 'Metadata must be an object' })
+  readonly metadata?: Record<string, unknown>;
 }
 
 export class EvaluateApprovalResponseDto {

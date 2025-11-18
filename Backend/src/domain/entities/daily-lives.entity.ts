@@ -42,9 +42,8 @@ export class DailyLives {
 
   get needsReset(): boolean {
     const today = new Date().toISOString().split('T')[0];
-    const lastResetDate = this.lastResetDate instanceof Date
-      ? this.lastResetDate
-      : new Date(this.lastResetDate);
+    const lastResetDate =
+      this.lastResetDate instanceof Date ? this.lastResetDate : new Date(this.lastResetDate);
     const lastReset = lastResetDate.toISOString().split('T')[0];
     return today !== lastReset;
   }

@@ -11,15 +11,10 @@ import {
   HttpCode,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { EnhancedJwtGuard } from '../../../shared/guards/enhanced-jwt.guard';
+import { SkipCSRF } from '../../../shared/guards/csrf.guard';
 import { AuthenticatedRequest } from '../../../shared/types/request.types';
 
 import { GetReadingChaptersStatusUseCase } from '../../../application/use-cases/reading/get-reading-chapters-status.use-case';
@@ -40,6 +35,7 @@ import {
   CompleteReadingChapterResponseDto,
 } from '../../../application/dtos/reading/complete-reading.dto';
 
+@SkipCSRF()
 @ApiTags('Reading')
 @Controller('reading/chapters')
 @UseGuards(ThrottlerGuard, EnhancedJwtGuard)

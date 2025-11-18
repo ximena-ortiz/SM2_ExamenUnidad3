@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import { InterviewPractice } from '../../../../domain/entities/interview-practice.entity';
 import { PracticeStatus } from '../../../../domain/entities/practice-session.entity';
@@ -11,7 +12,10 @@ import { UpdateConversationFlowDto } from '../../../dtos/interview-practice.dto'
 
 @Injectable()
 export class UpdateConversationFlowUseCase {
-  constructor(private readonly interviewPracticeRepository: IInterviewPracticeRepository) {}
+  constructor(
+    @Inject('IInterviewPracticeRepository')
+    private readonly interviewPracticeRepository: IInterviewPracticeRepository,
+  ) {}
 
   async execute(
     practiceId: string,

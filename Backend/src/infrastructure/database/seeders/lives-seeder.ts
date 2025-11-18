@@ -37,9 +37,10 @@ export class LivesSeeder {
       if (existingLives) {
         // Check if lives need reset
         // Handle both Date object and string format
-        const lastResetDateObj = existingLives.lastResetDate instanceof Date
-          ? existingLives.lastResetDate
-          : new Date(existingLives.lastResetDate);
+        const lastResetDateObj =
+          existingLives.lastResetDate instanceof Date
+            ? existingLives.lastResetDate
+            : new Date(existingLives.lastResetDate);
 
         const lastResetDate = lastResetDateObj.toISOString().split('T')[0];
 
@@ -55,7 +56,9 @@ export class LivesSeeder {
           existingLives.currentLives = 5;
           await livesRepository.save(existingLives);
           updatedCount++;
-          console.log(`  🔄 Restored lives for user: ${user.email} (${existingLives.currentLives} → 5 lives)`);
+          console.log(
+            `  🔄 Restored lives for user: ${user.email} (${existingLives.currentLives} → 5 lives)`,
+          );
         } else {
           skippedCount++;
           console.log(`  ⏭️  User ${user.email} already has 5 lives for today`);

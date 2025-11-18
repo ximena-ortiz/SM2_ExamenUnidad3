@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import {
   PracticeSession,
   PracticeType,
@@ -14,8 +14,11 @@ import { CreateInterviewPracticeDto } from '../../../dtos/interview-practice.dto
 @Injectable()
 export class CreateInterviewPracticeUseCase {
   constructor(
+    @Inject('IPracticeSessionRepository')
     private readonly practiceSessionRepository: IPracticeSessionRepository,
+    @Inject('IInterviewPracticeRepository')
     private readonly interviewPracticeRepository: IInterviewPracticeRepository,
+    @Inject('IChapterRepository')
     private readonly chapterRepository: IChapterRepository,
   ) {}
 

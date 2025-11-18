@@ -58,7 +58,7 @@ export class ReadingChapter {
   // Business methods
   getEstimatedReadingTime(): number {
     // Estimate based on metadata or default
-    return this.metadata?.estimatedMinutes as number || 10;
+    return (this.metadata?.estimatedMinutes as number) || 10;
   }
 
   getDifficultyLevel(): string {
